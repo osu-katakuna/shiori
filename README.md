@@ -15,7 +15,7 @@ $ node shiori
 
 ### Plugins
 
-shiori! is currently extended with the following plugins. Instructions on how to use them in your own server.
+shiori! is currently extended with the following plugins. Instructions on how to use them in your own server can be found at the specific readme page of the plugins.
 
 | Plugin  | README |
 | ------  | ------ |
