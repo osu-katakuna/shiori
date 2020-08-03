@@ -2,11 +2,11 @@ const fs = require('fs');
 const path = require('path');
 
 class ConfigManager {
-  constructor(module, defaultConfig) {
+  constructor(module, defaultConfig = {}) {
     this.logger = require("../logging");
     this.module = module;
     this.configFile = path.join(path.dirname(require.main.filename), `./config/${module}.json`);
-    this.defaults = defaultConfig == null ? {} : defaultConfig;
+    this.defaults = defaultConfig;
     this.configEntries = [];
 
     if(!fs.existsSync(this.configFile)) {

@@ -81,8 +81,12 @@ function LoadPlugins() {
 
     try {
       var m = require(path.join(pluginDir, package.main));
-      plugin.hookedFunctions = m.hooks;
+      plugin.hookedFunctions = m.hooks == null ? [] : m.hooks;
       plugin.config = m.configDefaults;
+      if(m.router) {
+        Logger.Info(`Registering Web Routes for ${plugin.name}...`)
+        require("../Webserver").RegisterRoute(m.router);
+      }
     } catch (ex) {
       Logger.Failure(`An error has occured in '${plugin.name}'. It will not be registered.\nStack trace: ${ex.stack}`);
       return;
