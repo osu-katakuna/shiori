@@ -1,0 +1,25 @@
+{
+  "name": "shiori",
+  "version": "2.1.3",
+  "description": "shiori! is an rewritten version of the katakuna! osu! server that offers an faster, stabler and extensible experience while using it.",
+  "main": "shiori.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osu-katakuna/shiori.git"
+  },
+  "keywords": [
+    "osu",
+    "server",
+    "emulator",
+    "katakuna"
+  ],
+  "author": "talnacialex",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/osu-katakuna/shiori/issues"
+  },
+  "homepage": "https://github.com/osu-katakuna/shiori#readme"
+}
