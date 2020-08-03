@@ -1,7 +1,7 @@
 var GlobalRouter = require('express').Router();
+var BanchoEmulator = require("../BanchoEmulator");
 var fs = require('fs');
 var path = require('path');
-const ConfigManager = require("../ConfigManager");
 
 function RegisterRoute(cb) {
   if(!cb) throw new Exception("an callback should be provided.");
@@ -10,7 +10,7 @@ function RegisterRoute(cb) {
 
 function StartServer(callback = (() => {})) {
   var app = require('express')();
-  var Config = new ConfigManager("shiori");
+  const Config = require("../shiori/ShioriConfig");
 
   const Server = Config.server.ssl.enabled ? require('https') : require('http');
 
@@ -29,8 +29,9 @@ function StartServer(callback = (() => {})) {
   		next();
   	}));
   });
-  app.use(GlobalRouter);
 
+  app.use(GlobalRouter);
+  app.use(BanchoEmulator);
 
   Server.createServer(options, app).listen(Config.server.port, callback);
 }

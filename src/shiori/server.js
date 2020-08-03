@@ -1,17 +1,5 @@
-const shioriDefaultConfiguration = {
-  server: {
-    ssl: {
-      enabled: false,
-      key: "/path/to/key.pem",
-      cert: "/path/to/cacert.pem"
-    },
-    port: 8080,
-    isUnderProxy: false
-  }
-};
-
 var PluginManager = require('../PluginManager');
-var ConfigManager = new (require('../ConfigManager'))("shiori", shioriDefaultConfiguration);
+var ConfigManager = require("./ShioriConfig");
 var WebServer = require('../Webserver');
 var Logger = require('../logging');
 

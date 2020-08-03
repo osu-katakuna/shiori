@@ -30,12 +30,24 @@ function HookInstance(by) {
 
   const Logger = require('../logging');
   const ConfigManager = by.config ? new(require('../ConfigManager'))(by.name, by.config) : undefined;
+  const Plugin = {
+    Disable: () => DisablePlugin(by.name)
+  };
 
   return {
     RequireMain,
     Logger,
-    ConfigManager
+    ConfigManager,
+    Plugin
   };
+}
+
+function DisablePlugin(plugin) {
+  var Logger = require('../logging');
+
+  Logger.Failure(`Disabling plugin '${plugin}'...`);
+  RegisteredPlugins = RegisteredPlugins.filter(x => x.name != plugin);
+  Logger.Info(`Disabled plugin '${plugin}'.`);
 }
 
 function CallHook(hook, ...args) {

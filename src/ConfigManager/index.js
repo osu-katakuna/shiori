@@ -16,6 +16,13 @@ class ConfigManager {
     } else {
       var c = require(this.configFile);
       for(var k in c) this.DefineConfigProperty(k, c[k]);
+
+      var unusedConfig = Object.keys(this.defaults).filter(x => !Object.keys(c).includes(x));
+      if(unusedConfig.length > 0) {
+        this.logger.Info(`Configuration file for ${module} has some new parameters. Modifying ${this.configFile}...`);
+        unusedConfig.forEach(k => this.DefineConfigProperty(k, this.defaults[k]));
+        this.Save();
+      }
     }
   }
 
