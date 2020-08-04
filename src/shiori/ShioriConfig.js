@@ -9,11 +9,18 @@ const shioriDefaultConfiguration = {
     isUnderProxy: false
   },
   database: {
+    subsystem: "mysql",
     host: "localhost",
     port: 3306,
     username: "katakuna",
     password: "katakuna",
     database: "katakuna"
+  },
+  redis: {
+    enabled: true,
+    host: "localhost",
+    port: 6379,
+    password: null
   }
 };
 

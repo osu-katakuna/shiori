@@ -2,6 +2,8 @@ var PluginManager = require('../PluginManager');
 var ConfigManager = require("./ShioriConfig");
 var WebServer = require('../Webserver');
 var Logger = require('../logging');
+var RedisSubsystem = require("../Redis");
+var Database = require("../Database");
 
 function Start() {
   // reset logger timing
@@ -29,6 +31,17 @@ function Start() {
 
   // show how many plugins we loaded and the time it took to load.
   Logger.Success(`Loaded ${PluginManager.RegisteredPlugins.length} plugin(s) in ${pluginLoadTime}s.`);
+
+  // initialize DB Connection
+  Database.Init();
+
+  // start an Redis connection
+  RedisSubsystem.Start();
+
+  // Subscribe to the channels
+  RedisSubsystem.SubscribeToChannel("shiori:test", function(d) {
+    Logger.Success("Received test command.");
+  });
 
   // start the web server.
   WebServer.StartServer();

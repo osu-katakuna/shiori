@@ -33,7 +33,8 @@ function StartServer(callback = (() => {})) {
   app.use(GlobalRouter);
   app.use(BanchoEmulator);
 
-  Server.createServer(options, app).listen(Config.server.port, callback);
+  if(Config.server.ssl.enabled) Server.createServer(options, app).listen(Config.server.port, callback);
+  else Server.createServer(app).listen(Config.server.port, callback);
 }
 
 module.exports = {

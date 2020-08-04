@@ -24,6 +24,7 @@
   "homepage": "https://github.com/osu-katakuna/shiori#readme",
   "dependencies": {
     "concat-stream": "^2.0.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "redis": "^3.0.2"
   }
 }
