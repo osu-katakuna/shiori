@@ -11,7 +11,7 @@ function OnMessageEvent(channel, args) {
 }
 
 function ErrorHandler(err) {
-  Logger.Error("REDIS:", err);
+  Logger.Failure("REDIS:", err);
 }
 
 function Start() {
