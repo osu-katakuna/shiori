@@ -4,6 +4,8 @@ const uuid = require('uuid').v4;
 var User = require('../../Models/User');
 const LoginParser = require('../Parsers/LoginParser');
 var crypto = require('crypto');
+var ExecuteHook = require("../../PluginManager").CallHook;
+var TokenManager = require("../../TokenManager");
 
 module.exports = ({req, res, token}) => {
   var LoginParameter = LoginParser(req.body);
@@ -19,17 +21,19 @@ module.exports = ({req, res, token}) => {
   } else {
     Logger.Success("Login: Authentication is successful.");
 
-    res.write(Packets.Notification("Welcome to katakuna!shiori v0.3 server!"));
+    TokenManager.CreateToken(user, token); // create token
+    var token = TokenManager.GetToken(token);
 
-    res.write(Packets.SilenceEndTime(0));
-    res.write(Packets.LoginResponse(1000));
-    res.write(Packets.ProtocolVersion(19));
+    ExecuteHook("onUserAuthentication", user, token);
 
-    res.write(Packets.UserSupporterGMT(5)); // give supporter automatically.
-    res.write(Packets.UserPanel(user));
-    res.write(Packets.UserStats(user));
-    res.write(Packets.ChannelInfoEnd());
+    if(user.abortLogin) {
+      Logger.Info("Login aborted; probably by an plugin.");
+      return;
+    }
 
+    token.sendLoginResponse();
+    TokenManager.NotifyEveryoneAboutNewUser(user.id);
 
+    ExecuteHook("onUserAuthenticated", user, token);
   }
 };

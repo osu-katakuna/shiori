@@ -6,7 +6,7 @@ module.exports = (from, to, message) => PacketGenerator.BuildPacket({
   data: [
     {
       type: PacketGenerator.Type.String,
-      value: from.username
+      value: from.name
     },
     {
       type: PacketGenerator.Type.String,

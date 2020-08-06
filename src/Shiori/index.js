@@ -4,6 +4,7 @@ var WebServer = require('../Webserver');
 var Logger = require('../logging');
 var RedisSubsystem = require("../Redis");
 var Database = require("../Database");
+var ChannelManager = require('../ChannelManager');
 
 function Start() {
   // reset logger timing

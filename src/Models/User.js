@@ -1,11 +1,13 @@
 const Model = require("../Model");
 const CountryList = require('../BanchoEmulator/Constants/Country');
+const TokenManager = require("../TokenManager");
 
 class User extends Model {
   constructor() {
     super();
 
     this.userCountry = 0; // UNKNOWN
+    this.abortLogin = false;
   }
 
   get timezone() {
@@ -66,6 +68,28 @@ class User extends Model {
 
   get action() {
     return 0;
+  }
+
+  hasPermission(permission) {
+    return true;
+  }
+
+  Kick(reason = "no reason provided", closeClient = false) {
+    abortLogin = true;
+    TokenManager.KickUser(this.id, reason, closeClient);
+  }
+
+  Ban(reason = "no reason provided") {
+    abortLogin = true;
+    TokenManager.BanUser(this.id, reason);
+  }
+
+  Mute(reason = "no reason provided", time) {
+    TokenManager.MuteUser(this.id, reason, time);
+  }
+
+  Restrict(reason = "no reason provided", direct = true) {
+    TokenManager.RestrictUser(this.id);
   }
 }
 
