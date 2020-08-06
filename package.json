@@ -25,6 +25,10 @@
   "dependencies": {
     "concat-stream": "^2.0.0",
     "express": "^4.17.1",
-    "redis": "^3.0.2"
+    "int64-buffer": "^0.99.1007",
+    "redis": "^3.0.2",
+    "sqlstring": "^2.3.2",
+    "sync-mysql": "^3.0.1",
+    "uuid": "^8.3.0"
   }
 }

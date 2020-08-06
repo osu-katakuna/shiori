@@ -1,23 +1,28 @@
 class DatabaseSubsystem {
   constructor() {
-    this.po = "dota";
-    this.twojej = "spinning";
-    this.pysznej = "toilet";
-    this.zupie = "homosex";
-    this.nie = "basshunter";
-    this.ruszam = "miku";
-    this.dupy = "dota";
-    this.z = "dota";
-    this.klopa = "dota";
-    this.ta = "dota";
-    this.zupa = "dota";
-    this.byla = "dota";
-    this.z = "dota";
-    this.mlekiem = "dota";
-    this.na = "dota";
-    this.mleko = "dota";
-    this.mam = "dota";
-    this.alergie = "dota";
+    this.connectionInstance = null;
+
+    this.database = "database";
+    this.databaseHost = "localhost";
+    this.databasePort = "port";
+    this.databaseUser = "database";
+    this.databasePassword = "database";
+  }
+
+  get Connected() {
+    return this.connectionInstance != null;
+  }
+
+  Connect() {
+    throw new Exception("not implemented");
+  }
+
+  Query(q, ...values) {
+    throw new Exception("not implemented");
+  }
+
+  Close() {
+    throw new Exception("not implemented");
   }
 }
 

@@ -32,8 +32,13 @@ function Start() {
   // show how many plugins we loaded and the time it took to load.
   Logger.Success(`Loaded ${PluginManager.RegisteredPlugins.length} plugin(s) in ${pluginLoadTime}s.`);
 
+  Logger.Info("Initializing database connection...");
+
   // initialize DB Connection
   Database.Init();
+  Database.GetSubsystem().Connect();
+
+  Logger.Success("Connected to the database.");
 
   // start an Redis connection
   RedisSubsystem.Start();
