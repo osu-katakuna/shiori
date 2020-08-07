@@ -10,19 +10,19 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.Byte,
-      value: user.action
+      value: user.status.type
     },
     {
       type: PacketGenerator.Type.String,
-      value: user.statusText
+      value: user.status.text
     },
     {
       type: PacketGenerator.Type.String,
-      value: user.statusMD5
+      value: user.status.hash
     },
     {
       type: PacketGenerator.Type.UInt32,
-      value: user.mods
+      value: user.status.mods
     },
     {
       type: PacketGenerator.Type.Byte,
@@ -46,7 +46,7 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.Int64,
-      value: user.totalScore
+      value: user.pp < 32767 ? user.totalScore : user.pp
     },
     {
       type: PacketGenerator.Type.Int32,
@@ -54,7 +54,7 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.Int16,
-      value: user.pp
+      value: user.pp < 32767 ? user.pp : 0
     }
   ]
 });

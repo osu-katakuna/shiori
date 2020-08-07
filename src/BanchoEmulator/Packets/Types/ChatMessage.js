@@ -18,7 +18,7 @@ module.exports = (from, to, message) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.UInt32,
-      value: from.user_id
+      value: from.id
     }
   ]
 });

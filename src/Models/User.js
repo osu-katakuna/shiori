@@ -8,6 +8,15 @@ class User extends Model {
 
     this.userCountry = 0; // UNKNOWN
     this.abortLogin = false;
+    this.token = null;
+  }
+
+  set status(v) {
+    TokenManager.SetStatus(this.id, v);
+  }
+
+  get status() {
+    return this.Token.status;
   }
 
   get timezone() {
@@ -54,24 +63,12 @@ class User extends Model {
     return 0;
   }
 
-  get mods() {
-    return 0;
-  }
-
-  get statusMD5() {
-    return "";
-  }
-
-  get statusText() {
-    return "";
-  }
-
-  get action() {
-    return 0;
+  get Token() {
+    return this.token ? TokenManager.GetToken(this.token) : TokenManager.FindTokenUserID(this.id);
   }
 
   hasPermission(permission) {
-    return true;
+    return false;
   }
 
   Kick(reason = "no reason provided", closeClient = false) {

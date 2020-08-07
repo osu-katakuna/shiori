@@ -1,6 +1,6 @@
 const Int64 = require("int64-buffer").Int64LE;
 const UInt64 = require("int64-buffer").Uint64LE;
-const { Type, TypeSizeCalculator } = require('../Utils/PacketUtils');
+const { Type, TypeSizeCalculator } = require('../PacketUtils');
 const { ReadString } = require('../Packets/Utils');
 
 function Parse(value, p) {

@@ -3,19 +3,25 @@ const defaultConfiguration = {
     {
       type: "public",
       name: "osu",
-      description: "oss channel",
+      description: "osu! main channel.",
       autojoin: true
     },
     {
       type: "public",
       name: "announce",
-      description: "announcement channel",
+      description: "Announcements channel.",
       autojoin: true
+    },
+    {
+      type: "public",
+      name: "lobby",
+      description: "Multiplayer Lobby.",
+      autojoin: false
     },
     {
       type: "permission",
       name: "admin",
-      description: "admin area",
+      description: "Administration area.",
       autojoin: true,
       permissionRequired: "admin.*"
     },
@@ -51,11 +57,11 @@ class Channel {
   }
 
   get members() {
-    return this._members.map(i => require("../TokenManager").FindTokenUserID(i).user);
+    return this._members.map(i => require("../TokenManager").FindTokenUserID(i).user).filter(u => u != undefined); // do checks if the tokens do still exist
   }
 
   get memberCount() {
-    return this._members.length;
+    return this.members.length;
   }
 
   SendMessage(from, message) {
@@ -67,6 +73,7 @@ class Channel {
   }
 
   Leave(who) {
+    Logger.Info(`${who.name} left ${this.name}`);
     this._members = this._members.filter(x => x != who.id);
   }
 }
@@ -132,6 +139,7 @@ function LeaveChannel(channel, who) {
 
 function SendMessage(to, by, message) {
   const TokenManager = require("../TokenManager");
+  const PluginManager = require("../PluginManager");
 
   if(to[0] != "#") return;
 
@@ -153,7 +161,9 @@ function SendMessage(to, by, message) {
   }
 
   Logger.Info(`CHANNEL MANAGER: ${by.name} => ${to}: ${message}`);
-  ch.SendMessage(by, message);
+  if(!PluginManager.CallHook("onPublicMessage", ch, by, message))
+    ch.SendMessage(by, message);
+  else Logger.Info(`CHANNEL MANAGER: A plugin managed the message. The message will be not sent over.`);
 }
 
 function GetAllChannels(who = null) {
@@ -161,6 +171,12 @@ function GetAllChannels(who = null) {
     if(c.type == ChannelType.PROTECTED_CHANNEL && c.permissionRequired != null && who != null && !who.hasPermission(c.permissionRequired)) return;
     return c;
   }).filter(x => x != undefined);
+}
+
+function GetJoinedChannelsOfUser(who = null) {
+  if(who == null) return;
+
+  return RegisteredChannels.filter(x => x.members.filter(m => m != null && m.id == who.id).length > 0);
 }
 
 function RegisterChannels() {
@@ -185,5 +201,6 @@ module.exports = {
   SendMessage,
   GetAllChannels,
   JoinChannel,
-  LeaveChannel
+  LeaveChannel,
+  GetJoinedChannelsOfUser
 };

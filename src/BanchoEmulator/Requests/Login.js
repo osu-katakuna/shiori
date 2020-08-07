@@ -21,19 +21,16 @@ module.exports = ({req, res, token}) => {
   } else {
     Logger.Success("Login: Authentication is successful.");
 
-    TokenManager.CreateToken(user, token); // create token
-    var token = TokenManager.GetToken(token);
+    user.token = TokenManager.CreateToken(user, token); // create token
 
-    ExecuteHook("onUserAuthentication", user, token);
-
-    if(user.abortLogin) {
+    if(!ExecuteHook("onUserAuthentication", user) && user.abortLogin) {
       Logger.Info("Login aborted; probably by an plugin.");
       return;
     }
 
-    token.sendLoginResponse();
-    TokenManager.NotifyEveryoneAboutNewUser(user.id);
+    user.Token.sendLoginResponse();
+    TokenManager.NotifyEveryoneAboutNewStats(user.id);
 
-    ExecuteHook("onUserAuthenticated", user, token);
+    ExecuteHook("onUserAuthenticated", user);
   }
 };

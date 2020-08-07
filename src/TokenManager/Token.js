@@ -1,6 +1,8 @@
 const Packets = require('../BanchoEmulator/Packets');
 const Logger = require('../logging');
 const ChannelManager = require('../ChannelManager');
+const Status = require("../Models/Status").Status;
+const StatusType = require("../Models/Status").StatusType;
 
 class Token {
   constructor(user, token) {
@@ -11,10 +13,22 @@ class Token {
       name: "BanchoBot"
     };
     this.token = token;
+    this.status = new Status();
+
+    this.user.token = this.token;
   }
 
   enqueue(packet) {
     this.queue.push(packet);
+  }
+
+  SetStatus(s) {
+    this.status = s;
+
+    this.NotifyUserStats(this.user);
+    console.log(this.queue);
+
+    console.log(`Token ID ${this.token} of user ${this.user.name} has received new status update: ${s}`);
   }
 
   Message(from, where, message) {
@@ -84,7 +98,8 @@ class Token {
     this.enqueue(Packets.ChannelInfoEnd());
   }
 
-  NotifyNewUser(user) {
+  NotifyUserStats(user) {
+    console.log(user.status);
     this.enqueue(Packets.UserPanel(user));
     this.enqueue(Packets.UserStats(user));
   }

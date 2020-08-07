@@ -53,15 +53,18 @@ function DisablePlugin(plugin) {
 function CallHook(hook, ...args) {
   var Logger = require('../logging');
 
+  var overriden = false;
+
   var f = AllHookedFunctions(hook);
   f.forEach(x => {
     Logger.Info(`Calling hook '${hook}' of '${x.by.name}'(${x.by.mainFile})...`);
     var i = HookInstance(x.by);
+    i.Invalidate = () => overriden = true;
     x.hook.call(i, ...args);
     if(i.ConfigManager) i.ConfigManager.Save();
   });
 
-  return true;
+  return overriden;
 }
 
 function LoadPlugins() {

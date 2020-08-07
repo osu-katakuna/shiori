@@ -7,7 +7,7 @@ var tokens = [];
 function CreateToken(user, token = uuid()) {
   Logger.Success(`Created token ${token} for player ${user.name}`);
 
-  tokens.push(new Token(user, token))
+  tokens.push(new Token(user, token));
 
   return token;
 }
@@ -56,9 +56,25 @@ function InformChannelChange(channel) {
   tokens.forEach(t => t.ChannelChange(channel));
 }
 
-function NotifyEveryoneAboutNewUser(id) {
+function SetStatus(id, s) {
+  tokens.filter(x => x.user.id == id).forEach(t => t.SetStatus(s));
+  NotifyEveryoneAboutNewStats(id);
+}
+
+function NotifyEveryoneAboutNewStats(id) {
   const user = FindTokenUserID(id).user;
-  tokens.filter(x => x.user.id != id).forEach(t => t.NotifyNewUser(user));
+  tokens.filter(x => x.user.id != id).forEach(t => t.NotifyUserStats(user));
+}
+
+function DestroyToken(token) {
+  const ChannelManager = require("../ChannelManager");
+
+  let user = GetToken(token).user;
+
+  ChannelManager.GetJoinedChannelsOfUser(user).forEach(c => c.Leave(user)); // make user leave all channels
+
+  tokens = tokens.filter(x => x.token != token); // remove the token from the list.
+  Logger.Success(`Destroyed token ${token} of user ${user.name}`);
 }
 
 module.exports = {
@@ -74,5 +90,7 @@ module.exports = {
   GetTokenByUser,
   KickUserFromChannel,
   JoinedUserChannel,
-  NotifyEveryoneAboutNewUser
+  SetStatus,
+  NotifyEveryoneAboutNewStats,
+  DestroyToken
 };

@@ -1,10 +1,12 @@
 const Logger = require('../logging');
 
 const PacketHandlerTable = {
-  1: require("./Requests/SendMessage"),   // send channel message
-  4: () => {},                            // noop; ping
-  63: require("./Requests/JoinChannel"),  // join chat channel
-  78: require("./Requests/LeaveChannel")  // part chat channel
+  0: require("./Requests/StatusUpdate"),   // update user status
+  1: require("./Requests/SendMessage"),    // send channel message
+  2: require("./Requests/DestroySession"), // destroy session token
+  4: () => {},                             // noop; ping
+  63: require("./Requests/JoinChannel"),   // join chat channel
+  78: require("./Requests/LeaveChannel")   // part chat channel
 };
 
 function ParsePacket(packet) {
