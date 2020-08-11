@@ -1,8 +1,11 @@
+const util = require("util");
+
 var Logger = require("../logging");
 var Redis = require("redis");
 var ShioriConfig = require("../shiori/ShioriConfig");
 
 var ClientInstance = null;
+var DatabaseInstance = null;
 var SubscribedChannels = [];
 
 function OnMessageEvent(channel, args) {
@@ -23,9 +26,13 @@ function Start() {
     password: ShioriConfig.redis.password == null || ShioriConfig.redis.password.length < 1 ? undefined : ShioriConfig.redis.password,
   });
 
+  DatabaseInstance = ClientInstance.duplicate();
+
   ClientInstance.on("error", ErrorHandler);
+  DatabaseInstance.on("error", ErrorHandler);
 
   ClientInstance.on("message", OnMessageEvent);
+  DatabaseInstance.on("message", OnMessageEvent);
 
   ClientInstance.on("subscribe", function(channel, count) {
     Logger.Info(`Subscribed Redis Channel '${channel}'.`);
@@ -34,6 +41,10 @@ function Start() {
   ClientInstance.on("unsubscribe", function(channel, count) {
     Logger.Info(`Unsubscribed Redis Channel '${channel}'.`);
     SubscribedChannels = SubscribedChannels.filter(x => x.channel != channel);
+  });
+
+  DatabaseInstance.monitor(function(err, res) {
+    console.log("Entering monitoring mode.");
   });
 }
 
@@ -48,9 +59,23 @@ function SubscribeToChannel(channel, callback) {
   SubscribedChannels.push({channel, callback});
 }
 
+async function Set(what, value) {
+  if(ShioriConfig.redis.enabled == null) return;
+
+  return await util.promisify(DatabaseInstance.set).bind(DatabaseInstance)(what, value);
+}
+
+async function Get(what) {
+  if(ShioriConfig.redis.enabled == null) return;
+
+  return await util.promisify(DatabaseInstance.get).bind(DatabaseInstance)(what);
+}
+
 module.exports = {
   Start,
   ClientInstance,
   SubscribeToChannel,
-  UnsubscribeChannel
+  UnsubscribeChannel,
+  Set,
+  Get
 };

@@ -1,15 +1,18 @@
 const uuid = require('uuid').v4;
-const Logger = require('../logging');
-var Token = require("./Token");
+const Logger = require("../logging");
+const Token = require("./Token");
+const RedisSubsystem = require("../Redis");
 
 var tokens = [];
 
 function CreateToken(user, token = uuid()) {
+  // create the token
+  tokens.push(new Token(user, token));
   Logger.Success(`Created token ${token} for player ${user.name}`);
 
-  tokens.push(new Token(user, token));
+  RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count
 
-  return token;
+  return token; // return the token
 }
 
 function GetToken(token) {
@@ -40,8 +43,16 @@ function MuteUser(id, reason = "no reason provided", time) {
   tokens.filter(x => x.user.id == id).forEach(t => t.Mute(reason, time));
 }
 
+function UnmuteUser(id) {
+  tokens.filter(x => x.user.id == id).forEach(t => t.Unmute());
+}
+
 function BanUser(id, reason = "no reason provided") {
   tokens.filter(x => x.user.id == id).forEach(t => t.Ban(reason));
+}
+
+function CloseClient(id) {
+  tokens.filter(x => x.user.id == id).forEach(t => t.CloseClient());
 }
 
 function KickUserFromChannel(id, channel) {
@@ -66,6 +77,10 @@ function NotifyEveryoneAboutNewStats(id) {
   tokens.filter(x => x.user.id != id).forEach(t => t.NotifyUserStats(user));
 }
 
+function OnlineUsersCount() {
+  return tokens.filter((value, index, self) => self.indexOf(value) === index).length;
+}
+
 function DestroyToken(token) {
   const ChannelManager = require("../ChannelManager");
 
@@ -74,6 +89,8 @@ function DestroyToken(token) {
   ChannelManager.GetJoinedChannelsOfUser(user).forEach(c => c.Leave(user)); // make user leave all channels
 
   tokens = tokens.filter(x => x.token != token); // remove the token from the list.
+
+  RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count
   Logger.Success(`Destroyed token ${token} of user ${user.name}`);
 }
 
@@ -85,12 +102,15 @@ module.exports = {
   KickUser,
   RestrictUser,
   MuteUser,
+  UnmuteUser,
   BanUser,
+  CloseClient,
   InformChannelChange,
   GetTokenByUser,
   KickUserFromChannel,
   JoinedUserChannel,
   SetStatus,
   NotifyEveryoneAboutNewStats,
-  DestroyToken
+  DestroyToken,
+  OnlineUsersCount
 };

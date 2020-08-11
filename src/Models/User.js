@@ -9,6 +9,9 @@ class User extends Model {
     this.userCountry = 0; // UNKNOWN
     this.abortLogin = false;
     this.token = null;
+
+    this.banned = false;
+    this.restricted = false;
   }
 
   set status(v) {
@@ -72,12 +75,12 @@ class User extends Model {
   }
 
   Kick(reason = "no reason provided", closeClient = false) {
-    abortLogin = true;
+    this.abortLogin = true;
     TokenManager.KickUser(this.id, reason, closeClient);
   }
 
   Ban(reason = "no reason provided") {
-    abortLogin = true;
+    this.abortLogin = true;
     TokenManager.BanUser(this.id, reason);
   }
 
@@ -85,8 +88,18 @@ class User extends Model {
     TokenManager.MuteUser(this.id, reason, time);
   }
 
-  Restrict(reason = "no reason provided", direct = true) {
+  Unmute() {
+    TokenManager.UnmuteUser(this.id);
+  }
+
+  Restrict() {
+    this.restricted = true;
+
     TokenManager.RestrictUser(this.id);
+  }
+
+  CloseClient() {
+    TokenManager.CloseClient(this.id);
   }
 }
 

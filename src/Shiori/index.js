@@ -3,8 +3,9 @@ var ConfigManager = require("./ShioriConfig");
 var WebServer = require('../Webserver');
 var Logger = require('../logging');
 var RedisSubsystem = require("../Redis");
-var Database = require("../Database");
 var ChannelManager = require('../ChannelManager');
+var ShioriRedisEvents = require('./RedisEvents');
+var Database = require("../Database");
 
 function Start() {
   // reset logger timing
@@ -45,9 +46,7 @@ function Start() {
   RedisSubsystem.Start();
 
   // Subscribe to the channels
-  RedisSubsystem.SubscribeToChannel("shiori:test", function(d) {
-    Logger.Success("Received test command.");
-  });
+  ShioriRedisEvents.Initialize();
 
   // start the web server.
   WebServer.StartServer();

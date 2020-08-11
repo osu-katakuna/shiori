@@ -14,8 +14,6 @@ function Init() {
   DBSubsystem.databaseUser = ShioriConfig.database.username;
   DBSubsystem.databasePassword = ShioriConfig.database.password;
   DBSubsystem.database = ShioriConfig.database.database;
-
-  console.log("DB SUBSYSTEM INIT:", DBSubsystem);
 }
 
 function GetSubsystem() {
