@@ -29,7 +29,12 @@ module.exports = ({req, res, token}) => {
     }
 
     user.Token.sendLoginResponse();
-    TokenManager.NotifyEveryoneAboutNewStats(user.id);
+    TokenManager.DistributeNewPanel(user);
+
+    TokenManager.OnlineUsers().forEach(u => {
+      if(u.id == user.id) return; // we don't need our panel we need online players ok?
+      user.Token.NotifyUserPanel(u);
+    });
 
     ExecuteHook("onUserAuthenticated", user);
   }

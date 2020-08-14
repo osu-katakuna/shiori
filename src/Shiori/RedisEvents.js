@@ -26,6 +26,15 @@ function Initialize() {
       t.user.Unmute();
   });
 
+  RedisSubsystem.SubscribeToChannel("shiori:update.user_stats", function(userID) {
+    Logger.Info(`REDIS: Received command to update cached stats for user id ${userID}.`);
+    if((t = TokenManager.FindTokenUserID(userID)) != null) {
+      t.user.CacheStats();
+      t.user.NewStatus();
+    }
+  });
+
+
   RedisSubsystem.SubscribeToChannel("shiori:kick", function(d) {
     let obj = JSON.parse(d);
 

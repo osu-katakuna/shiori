@@ -10,16 +10,47 @@ class User extends Model {
     this.abortLogin = false;
     this.token = null;
 
-    this.banned = false;
-    this.restricted = false;
+    this.cachedStats = [];
+
+    for(var i = 0; i < 8; i++) {
+      this.cachedStats[i] = {
+        pp: 1337,
+        rank: 13,
+        totalScore: 13,
+        totalRankedScore: 1,
+        playCount: 1,
+        accuracy: 1,
+        gameMode: i > 3 ? i - 4 : i
+      };
+    }
   }
 
   set status(v) {
-    TokenManager.SetStatus(this.id, v);
+    TokenManager.SetStatus(this, v);
   }
 
   get status() {
     return this.Token.status;
+  }
+
+  get stats() {
+    return this.Token.stats;
+  }
+
+  get relaxMode() {
+    return this.Token.relaxMode;
+  }
+
+  CacheStats(gamemode = 0) {
+    this.cachedStats[gamemode] = {
+      pp: 1337,
+      rank: 13,
+      totalScore: 13,
+      totalRankedScore: 1,
+      playCount: 1,
+      accuracy: 1,
+      gameMode: gamemode > 3 ? gamemode - 4 : gamemode
+    };
   }
 
   get timezone() {
@@ -36,34 +67,6 @@ class User extends Model {
 
   set country(c) {
     this.userCountry = CountryList[c] ? CountryList[c] : 0;
-  }
-
-  get rank() {
-    return 0;
-  }
-
-  get pp() {
-    return 0;
-  }
-
-  get totalScore() {
-    return 0;
-  }
-
-  get totalRankedScore() {
-    return 0;
-  }
-
-  get playCount() {
-    return 0;
-  }
-
-  get accuracy() {
-    return 0;
-  }
-
-  get gameMode() {
-    return 0;
   }
 
   get Token() {
@@ -93,13 +96,15 @@ class User extends Model {
   }
 
   Restrict() {
-    this.restricted = true;
-
     TokenManager.RestrictUser(this.id);
   }
 
   CloseClient() {
     TokenManager.CloseClient(this.id);
+  }
+
+  NewStatus() {
+    TokenManager.NewStatusUpdate(this);
   }
 }
 

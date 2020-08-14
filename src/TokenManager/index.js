@@ -1,14 +1,25 @@
 const uuid = require('uuid').v4;
 const Logger = require("../logging");
-const Token = require("./Token");
+const OsuToken = require("./OsuToken");
+const BotToken = require("./BotToken");
 const RedisSubsystem = require("../Redis");
 
 var tokens = [];
 
 function CreateToken(user, token = uuid()) {
   // create the token
-  tokens.push(new Token(user, token));
+  tokens.push(new OsuToken(user, token));
   Logger.Success(`Created token ${token} for player ${user.name}`);
+
+  RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count
+
+  return token; // return the token
+}
+
+function RegisterBot(user, token = uuid()) {
+  // create the token
+  tokens.push(new BotToken(user, token));
+  Logger.Success(`Created token ${token} for bot ${user.name}`);
 
   RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count
 
@@ -67,18 +78,29 @@ function InformChannelChange(channel) {
   tokens.forEach(t => t.ChannelChange(channel));
 }
 
-function SetStatus(id, s) {
-  tokens.filter(x => x.user.id == id).forEach(t => t.SetStatus(s));
-  NotifyEveryoneAboutNewStats(id);
+function SetStatus(user, s) {
+  tokens.filter(x => x.user.id == user.id).forEach(t => t.SetStatus(s));
+  DistributeNewStats(user);
 }
 
-function NotifyEveryoneAboutNewStats(id) {
-  const user = FindTokenUserID(id).user;
-  tokens.filter(x => x.user.id != id).forEach(t => t.NotifyUserStats(user));
+function DistributeNewPanel(user) {
+  tokens.filter(x => x.user.id != user.id).forEach(t => t.NotifyUserPanel(user));
+}
+
+function DistributeNewStats(user) {
+  tokens.filter(x => x.user.id != user.id).forEach(t => t.NotifyUserStats(user));
+}
+
+function NewStatusUpdate(user) {
+  tokens.forEach(t => t.NotifyUserStats(user));
 }
 
 function OnlineUsersCount() {
-  return tokens.filter((value, index, self) => self.indexOf(value) === index).length;
+  return OnlineUsers().length;
+}
+
+function OnlineUsers() {
+  return tokens.filter((value, index, self) => self.indexOf(value) === index).map(t => t.user);
 }
 
 function DestroyToken(token) {
@@ -96,6 +118,7 @@ function DestroyToken(token) {
 
 module.exports = {
   CreateToken,
+  RegisterBot,
   GetToken,
   FindTokenUsername,
   FindTokenUserID,
@@ -110,7 +133,10 @@ module.exports = {
   KickUserFromChannel,
   JoinedUserChannel,
   SetStatus,
-  NotifyEveryoneAboutNewStats,
+  DistributeNewStats,
   DestroyToken,
-  OnlineUsersCount
+  OnlineUsersCount,
+  OnlineUsers,
+  NewStatusUpdate,
+  DistributeNewPanel
 };

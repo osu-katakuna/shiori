@@ -13,6 +13,7 @@ module.exports = ({req, res, token, data}) => {
   newStatus.hash = m.hash;
   newStatus.text = m.text;
   newStatus.mods = m.mods;
+  newStatus.gameMode = m.gameMode;
 
   TokenManager.GetToken(token).user.status = newStatus;
   CallHook("onStatusUpdate", TokenManager.GetToken(token).user);

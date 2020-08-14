@@ -14,7 +14,7 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.String,
-      value: user.status.text
+      value: user.relaxMode ? (user.status.text ? user.status.text + " on Relax" : "on Relax") : user.status.text
     },
     {
       type: PacketGenerator.Type.String,
@@ -26,7 +26,7 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.Byte,
-      value: user.gameMode
+      value: user.stats.gameMode
     },
     {
       type: PacketGenerator.Type.Int32,
@@ -34,27 +34,27 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.Int64,
-      value: user.totalRankedScore
+      value: user.stats.totalRankedScore
     },
     {
       type: PacketGenerator.Type.Float,
-      value: user.accuracy
+      value: user.stats.accuracy
     },
     {
       type: PacketGenerator.Type.Int32,
-      value: user.playCount
+      value: user.stats.playCount
     },
     {
       type: PacketGenerator.Type.Int64,
-      value: user.pp < 32767 ? user.totalScore : user.pp
+      value: user.stats.pp < 32767 ? user.stats.totalScore : user.stats.pp
     },
     {
       type: PacketGenerator.Type.Int32,
-      value: user.rank
+      value: user.stats.rank
     },
     {
       type: PacketGenerator.Type.Int16,
-      value: user.pp < 32767 ? user.pp : 0
+      value: user.stats.pp < 32767 ? user.stats.pp : 0
     }
   ]
 });
