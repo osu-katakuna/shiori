@@ -144,6 +144,10 @@ class OsuToken extends Token {
   NotifyUserStats(user) {
     this.enqueue(Packets.UserStats(user));
   }
+
+  NotifyFriends(id_list) {
+    this.enqueue(Packets.FriendsList(id_list));
+  }
 }
 
 module.exports = OsuToken;

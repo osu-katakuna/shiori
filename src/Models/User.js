@@ -1,6 +1,7 @@
 const Model = require("../Model");
 const CountryList = require('../BanchoEmulator/Constants/Country');
 const TokenManager = require("../TokenManager");
+const UserFriend = require("./UserFriend");
 
 class User extends Model {
   constructor() {
@@ -23,6 +24,10 @@ class User extends Model {
         gameMode: i > 3 ? i - 4 : i
       };
     }
+  }
+
+  get friends() {
+    return this.hasMany(UserFriend, "id", "user");
   }
 
   set status(v) {
@@ -109,5 +114,8 @@ class User extends Model {
 }
 
 User.table = "users";
+User.protected = [
+  "password_hash"
+];
 
 module.exports = User;

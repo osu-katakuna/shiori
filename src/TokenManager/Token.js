@@ -101,6 +101,10 @@ class Token {
   NotifyUserStats(user) {
     Logger.Failure(`Token Base: Not implemented - NotifyUserStats(${user})`);
   }
+
+  NotifyFriends(id_list) {
+    Logger.Failure(`Token Base: Not implemented - NotifyFriends(${id_list})`);
+  }
 }
 
 module.exports = Token;

@@ -36,6 +36,8 @@ module.exports = ({req, res, token}) => {
       user.Token.NotifyUserPanel(u);
     });
 
+    user.Token.NotifyFriends(user.friends.map(m => m.friend));
+
     ExecuteHook("onUserAuthenticated", user);
   }
 };

@@ -8,6 +8,7 @@ const PacketHandlerTable = {
   4: () => {},                                  // noop; ping
   63: require("./Requests/JoinChannel"),        // join chat channel
   73: require("./Requests/AddFriend"),          // add friend
+  74: require("./Requests/RemoveFriend"),       // remove friend
   78: require("./Requests/LeaveChannel"),       // part chat channel
   79: () => {},                                 // noop; ReceiveUpdates
   85: require("./Requests/RequestUserStats")    // request users stats
