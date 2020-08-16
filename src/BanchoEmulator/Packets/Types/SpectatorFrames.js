@@ -43,9 +43,6 @@ module.exports = (frame) => {
     value: frame.action
   });
 
-  console.log(frame.action);
-  console.log(template);
-
   if(frame.score != null) {
     const scoreTemplate = [
   	  { value: frame.score.time, type: PacketGenerator.Type.Int32 },
