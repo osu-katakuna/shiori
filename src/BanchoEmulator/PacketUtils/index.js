@@ -11,7 +11,8 @@ const Type = {
   Int16: 6,
   UInt32: 7,
   UInt64: 8,
-  ArrayOfValues: 9
+  ArrayOfValues: 9,
+  UInt16: 10,
 };
 
 function TypeSizeCalculator(type, data) {
@@ -23,7 +24,7 @@ function TypeSizeCalculator(type, data) {
     return data.length;
   else if(type == Type.Int32 || type == Type.UInt32)
     return 4;
-  else if(type == Type.Int16)
+  else if(type == Type.Int16 || type == Type.UInt16)
     return 2;
   else if(type == Type.Float)
     return 4;

@@ -18,7 +18,20 @@ module.exports = ({req, res, token}) => {
   if(user == null) {
     Logger.Failure("Login: Wrong user credentials.");
     res.write(Packets.LoginResponse(-1)); // Wrong Login Data
+
+    // please check if the user exists... if so run the event.
+    if((t = User.where([
+      ["name", LoginParameter.User]
+    ])[0]) != null) {
+      ExecuteHook("onUserAuthenticationFail", t);
+    }
   } else {
+    if(TokenManager.FindTokenUserID(user.id) != null) {
+      Logger.Success("Login: Authentication is successful, but this user is already online.");
+      res.write(Packets.Notification("You authenticated successfully, but it seems that you're already connected from somewhere.\nIf this problem persists, go to your profile page and revoke all associated tokens."));
+      return;
+    }
+
     Logger.Success("Login: Authentication is successful.");
 
     user.token = TokenManager.CreateToken(user, token); // create token
@@ -29,10 +42,12 @@ module.exports = ({req, res, token}) => {
     }
 
     user.Token.sendLoginResponse();
-    TokenManager.DistributeNewPanel(user);
 
-    TokenManager.OnlineUsers().forEach(u => {
-      if(u.id == user.id) return; // we don't need our panel we need online players ok?
+    if(!user.restricted)
+      TokenManager.DistributeNewPanel(user);
+
+    TokenManager.AllOnlineUsers().forEach(u => {
+      if(u.id == user.id || u.restricted) return; // we don't need our panel or restricted players panels. we need online & clean players ok?
       user.Token.NotifyUserPanel(u);
     });
 

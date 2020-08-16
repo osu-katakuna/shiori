@@ -2,7 +2,7 @@ const util = require("util");
 
 var Logger = require("../logging");
 var Redis = require("redis");
-var ShioriConfig = require("../shiori/ShioriConfig");
+var ShioriConfig = require("../Shiori/ShioriConfig");
 
 var ClientInstance = null;
 var DatabaseInstance = null;
@@ -18,7 +18,7 @@ function ErrorHandler(err) {
 }
 
 function Start() {
-  if(ShioriConfig.redis.enabled == null) return;
+  if(ShioriConfig.redis.enabled == null || ShioriConfig.redis.enabled == false) return;
 
   ClientInstance = Redis.createClient({
     host: ShioriConfig.redis.host,
@@ -53,20 +53,20 @@ function UnsubscribeChannel(channel) {
 }
 
 function SubscribeToChannel(channel, callback) {
-  if(ShioriConfig.redis.enabled == null) return;
+  if(ShioriConfig.redis.enabled == null || ShioriConfig.redis.enabled == false) return;
 
   if(SubscribedChannels.filter(x => x.channel == channel).length == 0) ClientInstance.subscribe(channel);
   SubscribedChannels.push({channel, callback});
 }
 
 async function Set(what, value) {
-  if(ShioriConfig.redis.enabled == null) return;
+  if(ShioriConfig.redis.enabled == null || ShioriConfig.redis.enabled == false) return;
 
   return await util.promisify(DatabaseInstance.set).bind(DatabaseInstance)(what, value);
 }
 
 async function Get(what) {
-  if(ShioriConfig.redis.enabled == null) return;
+  if(ShioriConfig.redis.enabled == null || ShioriConfig.redis.enabled == false) return;
 
   return await util.promisify(DatabaseInstance.get).bind(DatabaseInstance)(what);
 }

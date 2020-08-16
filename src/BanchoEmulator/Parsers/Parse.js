@@ -22,6 +22,9 @@ function Parse(value, p) {
   } else if(p.type == Type.Int16) {
     data = value.readInt16LE();
     offset += 2;
+  } else if(p.type == Type.UInt16) {
+    data = value.readUInt16LE();
+    offset += 2;
   } else if(p.type == Type.Float) {
     data = value.readFloatLE();
     offset += 4;

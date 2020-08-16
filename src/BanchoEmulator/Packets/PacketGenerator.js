@@ -26,6 +26,8 @@ function BuildPacket(__packet) {
       packet.writeUInt32LE(p.value, offset);
     else if(p.type == Type.Int16)
       packet.writeInt16LE(p.value, offset);
+    else if(p.type == Type.UInt16)
+      packet.writeUInt16LE(p.value, offset);
     else if(p.type == Type.Float)
       packet.writeFloatLE(p.value, offset);
     else if(p.type == Type.Int64)

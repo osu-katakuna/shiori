@@ -100,7 +100,11 @@ function OnlineUsersCount() {
 }
 
 function OnlineUsers() {
-  return tokens.filter((value, index, self) => self.indexOf(value) === index).map(t => t.user);
+  return tokens.filter((value, index, self) => self.indexOf(value) === index && !(value instanceof BotToken)).map(t => t.user); // filter tokens; we don't need BOT TOKENS!
+}
+
+function AllOnlineUsers() {
+  return tokens.filter((value, index, self) => self.indexOf(value) === index).map(t => t.user); // no filtering here
 }
 
 function DestroyToken(token) {
@@ -137,6 +141,7 @@ module.exports = {
   DestroyToken,
   OnlineUsersCount,
   OnlineUsers,
+  AllOnlineUsers,
   NewStatusUpdate,
   DistributeNewPanel
 };

@@ -10,7 +10,7 @@ function RegisterRoute(cb) {
 
 function StartServer(callback = (() => {})) {
   var app = require('express')();
-  const Config = require("../shiori/ShioriConfig");
+  const Config = require("../Shiori/ShioriConfig");
 
   const Server = Config.server.ssl.enabled ? require('https') : require('http');
 

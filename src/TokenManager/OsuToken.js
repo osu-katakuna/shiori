@@ -20,6 +20,17 @@ class OsuToken extends Token {
     this.gameMode = 0;
 
     this.relax = false;
+
+    this.spectatorFrameQueue = [];
+  }
+
+  queueSpectatorFrames() {
+    for(var i = 0; i < this.spectatorFrameQueue.length; i++) {
+      this.enqueue(Packets.SpectatorFrames(this.spectatorFrameQueue[i]));
+      this.spectatorFrameQueue[i] = null;
+    }
+
+    this.spectatorFrameQueue = this.spectatorFrameQueue.filter(f => f != null);
   }
 
   get loginCheck() {
@@ -147,6 +158,44 @@ class OsuToken extends Token {
 
   NotifyFriends(id_list) {
     this.enqueue(Packets.FriendsList(id_list));
+  }
+
+  NotifySpectatorJoined(user) {
+    if(this.mySpectators.filter(spectator => spectator.user.id == user.id).length == 0) { // make sure we prevent multiple spectators showing up...
+      this.enqueue(Packets.SpectatorJoined(user));
+      this.mySpectators.forEach(s => {
+        s.user.Token.enqueue(Packets.FellowSpectatorJoined(user))
+        user.Token.enqueue(Packets.FellowSpectatorJoined(s.user));
+        if(!s.hasMap) user.Token.enqueue(Packets.SpectatorNoBeatmap(s.user));
+      });
+    }
+
+    this.mySpectators.push({
+      user,
+      hasMap: true
+    });
+  }
+
+  NotifySpectatorLeft(user) {
+    this.mySpectators = this.mySpectators.filter(spectator => spectator.user != user);
+    if(this.mySpectators.filter(spectator => spectator.user.id == user.id).length == 0) {// make sure we prevent informing the spectated that some one left befure making sure that they TRULY stopped spectating...
+      this.enqueue(Packets.SpectatorLeft(user));
+      this.mySpectators.forEach(u => u.user.Token.enqueue(Packets.FellowSpectatorLeft(user)));
+    }
+  }
+
+  NotifySpectatorNoMap(user) {
+    this.mySpectators.filter(spectator => spectator.user === user).forEach(s => s.hasMap = false);
+    this.enqueue(Packets.SpectatorNoBeatmap(user));
+    this.mySpectators.filter(spectator => spectator.user.id != user.id).forEach(u => u.user.Token.enqueue(Packets.SpectatorNoBeatmap(user)));
+  }
+
+  SendSpectatorFrame(frame) {
+    this.mySpectators.forEach(s => s.user.Token.NotifyNewFrame(frame));
+  }
+
+  NotifyNewFrame(frame) {
+    this.spectatorFrameQueue.push(frame);
   }
 }
 

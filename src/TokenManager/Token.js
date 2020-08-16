@@ -13,6 +13,9 @@ class Token {
 
     this.banned = false;
     this.restricted = false;
+
+    this.mySpectators = [];
+    this.spectatedUser = null;
   }
 
   get stats() {
@@ -25,6 +28,19 @@ class Token {
       accuracy: 0,
       gameMode: 0
     };
+  }
+
+  Spectate(user) {
+    if(this.spectatedUser) this.StopSpectating();
+    user.Token.NotifySpectatorJoined(this.user);
+    this.spectatedUser = user;
+  }
+
+  StopSpectating() {
+    if(this.spectatedUser) {
+      this.spectatedUser.Token.NotifySpectatorLeft(this.user);
+      this.spectatedUser = null;
+    }
   }
 
   enqueue(packet) {
@@ -104,6 +120,26 @@ class Token {
 
   NotifyFriends(id_list) {
     Logger.Failure(`Token Base: Not implemented - NotifyFriends(${id_list})`);
+  }
+
+  NotifySpectatorJoined(user) {
+    Logger.Failure(`Token Base: Not implemented - NotifySpectatorJoined(${user})`);
+  }
+
+  NotifySpectatorLeft(user) {
+    Logger.Failure(`Token Base: Not implemented - NotifySpectatorLeft(${user})`);
+  }
+
+  NotifySpectatorNoMap(user) {
+    Logger.Failure(`Token Base: Not implemented - NotifySpectatorNoMap(${user})`);
+  }
+
+  SendSpectatorFrame(frame) {
+    Logger.Failure(`Token Base: Not implemented - SendSpectatorFrame(${frame})`);
+  }
+
+  NotifyNewFrame(frame) {
+    Logger.Failure(`Token Base: Not implemented - NotifyNewFrame(${frame})`);
   }
 }
 

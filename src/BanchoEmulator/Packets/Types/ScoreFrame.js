@@ -21,8 +21,8 @@ module.exports = (frame) => {
   ];
 
   if(frame.usingScoreV2) {
-    template.push({ value: frame.comboPortion, type: PacketGenerator.Type.Int64 });
-		template.push({ value: frame.bonusPortion, type: PacketGenerator.Type.Int64 });
+    data.push({ value: frame.comboPortion, type: PacketGenerator.Type.Int64 });
+		data.push({ value: frame.bonusPortion, type: PacketGenerator.Type.Int64 });
   }
 
   return PacketGenerator.BuildPacket({
