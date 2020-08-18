@@ -9,7 +9,7 @@ function Parse(value, p) {
 
   if(p.type == Type.String) {
     data = ReadString(value, 0);
-    offset += data.length == 1 ? 1 : data.length + 2;
+    offset += data == null ? 1 : data.length + 2;
   } else if(p.type == Type.Byte) {
     data = value[offset];
     offset += 1;

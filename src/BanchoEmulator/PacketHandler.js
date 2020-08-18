@@ -2,21 +2,27 @@ const Logger = require('../logging');
 const TokenManager = require('../TokenManager');
 
 const PacketHandlerTable = {
-  0: require("./Requests/StatusUpdate"),        // update user status
-  1: require("./Requests/SendMessage"),         // send channel message
-  2: require("./Requests/DestroySession"),      // destroy session token
-  3: require("./Requests/RequestStatusUpdate"), // request status update from server
-  4: () => {},                                  // noop; ping
-  16: require("./Requests/SpectatePlayer"),     // start spectating
-  17: require("./Requests/EndSpectatePlayer"),  // stop spectating
-  18: require("./Requests/SpectatorFrame"),     // player sent an spectator frame
-  21: require("./Requests/NoBeatmapSpectator"), // player doesn't have the map
-  63: require("./Requests/JoinChannel"),        // join chat channel
-  73: require("./Requests/AddFriend"),          // add friend
-  74: require("./Requests/RemoveFriend"),       // remove friend
-  78: require("./Requests/LeaveChannel"),       // part chat channel
-  79: () => {},                                 // noop; ReceiveUpdates
-  85: require("./Requests/RequestUserStats")    // request users stats
+  0: require("./Requests/StatusUpdate"),            // update user status
+  1: require("./Requests/SendMessage"),             // send channel message
+  2: require("./Requests/DestroySession"),          // destroy session token
+  3: require("./Requests/RequestStatusUpdate"),     // request status update from server
+  4: () => {},                                      // noop; ping
+  16: require("./Requests/SpectatePlayer"),         // start spectating
+  17: require("./Requests/EndSpectatePlayer"),      // stop spectating
+  18: require("./Requests/SpectatorFrame"),         // player sent an spectator frame
+  21: require("./Requests/NoBeatmapSpectator"),     // player doesn't have the map
+  29: require("./Requests/LeaveLobby"),             // leave multiplayer lobby
+  30: require("./Requests/EnterLobby"),             // enter multiplayer lobby
+  31: require("./Requests/CreateMultiplayerMatch"), // create multiplayer match
+  32: require("./Requests/JoinMultiplayerMatch"),   // join multiplayer match
+  33: require("./Requests/LeaveMultiplayerMatch"),  // leave current multiplayer match
+  41: require("./Requests/UpdateMatchInfo"),        // update multiplayer match info
+  63: require("./Requests/JoinChannel"),            // join chat channel
+  73: require("./Requests/AddFriend"),              // add friend
+  74: require("./Requests/RemoveFriend"),           // remove friend
+  78: require("./Requests/LeaveChannel"),           // part chat channel
+  79: () => {},                                     // noop; ReceiveUpdates
+  85: require("./Requests/RequestUserStats")        // request users stats
 };
 
 function ParsePacket(packet) {

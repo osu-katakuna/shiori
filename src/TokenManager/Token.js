@@ -14,8 +14,24 @@ class Token {
     this.banned = false;
     this.restricted = false;
 
+    this.inMatch = false;
+    this.matchID = -1;
+
     this.mySpectators = [];
     this.spectatedUser = null;
+
+    this.timeout = null;
+    this.resetTimeout();
+  }
+
+  resetTimeout() {
+    if(this.timeout != null) clearTimeout(this.timeout);
+
+    this.timeout = setTimeout(() => {
+      var TokenManager = require("./index");
+      Logger.Info(`${this.token} => ${this.user.name} has timed out.`);
+      TokenManager.DestroyToken(this.token);
+    }, 60000);
   }
 
   get stats() {
@@ -140,6 +156,26 @@ class Token {
 
   NotifyNewFrame(frame) {
     Logger.Failure(`Token Base: Not implemented - NotifyNewFrame(${frame})`);
+  }
+
+  NotifyNewMultiplayerMatch(match) {
+    Logger.Failure(`Token Base: Not implemented - NotifyNewMultiplayerMatch(${match})`);
+  }
+
+  NotifyUpdateMultiplayerMatch(match) {
+    Logger.Failure(`Token Base: Not implemented - NotifyUpdateMultiplayerMatch(${match})`);
+  }
+
+  NotifyMPLobby(match) {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPLobby(${match})`);
+  }
+
+  NotifyJoinedMPLobby(match) {
+    Logger.Failure(`Token Base: Not implemented - NotifyJoinedMPLobby(${match})`);
+  }
+
+  NotifyFailJoinMP() {
+    Logger.Failure(`Token Base: Not implemented - NotifyFailJoinMP`);
   }
 }
 

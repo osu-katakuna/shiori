@@ -197,6 +197,26 @@ class OsuToken extends Token {
   NotifyNewFrame(frame) {
     this.spectatorFrameQueue.push(frame);
   }
+
+  NotifyMPLobby(match) {
+    this.enqueue(Packets.MatchInfo(match));
+  }
+
+  NotifyJoinedMPLobby(match) {
+    this.enqueue(Packets.MatchInfo(match, true));
+  }
+
+  NotifyFailJoinMP() {
+    this.enqueue(Packets.MatchJoinFailure());
+  }
+
+  NotifyNewMultiplayerMatch(match) {
+    this.enqueue(Packets.NewMatchInfo(match));
+  }
+
+  NotifyUpdateMultiplayerMatch(match) {
+    this.enqueue(Packets.NewMatchInfo(match));
+  }
 }
 
 module.exports = OsuToken;

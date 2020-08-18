@@ -2,9 +2,7 @@ const PacketGenerator = require('../PacketGenerator');
 const PacketConstant = require('../PacketConstants');
 
 module.exports = (match) => {
-  console.log(match);
-  var data = [
-    {
+  var data = [{
       type: PacketGenerator.Type.Int16,
       value: match.id
     },
@@ -26,75 +24,70 @@ module.exports = (match) => {
     },
     {
       type: PacketGenerator.Type.String,
-      value: match.password == null ? "" : "true"
+      value: match.password != null && match.password.length > 0 ? " " : ""
     },
     {
       type: PacketGenerator.Type.String,
-      value: match.beatmapName
+      value: match.beatmap.name
     },
     {
       type: PacketGenerator.Type.Int32,
-      value: match.beatmapID
+      value: match.beatmap.id
     },
     {
       type: PacketGenerator.Type.String,
-      value: match.beatmapMD5
+      value: match.beatmap.hash
     }
   ];
 
-  for(var i = 0; i < 16; i++) {
+  for (var i = 0; i < 16; i++) {
     data.push({
       type: PacketGenerator.Type.Byte,
-      value: match.slots[i].status
+      value: match.getSlot(i).status
     });
   }
 
-  for(var i = 0; i < 16; i++) {
+  for (var i = 0; i < 16; i++) {
     data.push({
       type: PacketGenerator.Type.Byte,
-      value: match.slots[i].team
+      value: match.getSlot(i).team
     });
   }
 
-  for(var i = 0; i < 16; i++) {
-    if(match.slots[i].userID > -1) {
+  for (var i = 0; i < 16; i++) {
+    if (match.getSlot(i).status & 124) {
       data.push({
         type: PacketGenerator.Type.UInt32,
-        value: match.slots[i].userID
+        value: match.getSlot(i).player.user.id
       });
     }
   }
 
-  data.push({
-    type: PacketGenerator.Type.UInt32,
-    value: match.hostUserID
-  });
+  data = [
+    ...data,
+    {
+      type: PacketGenerator.Type.UInt32,
+      value: match.host == null ? -1 : match.host.user.id
+    }, {
+      type: PacketGenerator.Type.Byte,
+      value: match.gameMode
+    }, {
+      type: PacketGenerator.Type.Byte,
+      value: match.winCondition
+    }, {
+      type: PacketGenerator.Type.Byte,
+      value: match.teamMode
+    }, {
+      type: PacketGenerator.Type.Byte,
+      value: match.freeMod
+    }
+  ];
 
-  data.push({
-    type: PacketGenerator.Type.Byte,
-    value: match.gameMode
-  });
-
-  data.push({
-    type: PacketGenerator.Type.Byte,
-    value: match.matchScoringType
-  });
-
-  data.push({
-    type: PacketGenerator.Type.Byte,
-    value: match.matchTeamType
-  });
-
-  data.push({
-    type: PacketGenerator.Type.Byte,
-    value: match.matchModMode
-  });
-
-  if(match.matchModMode == 1) {
-    for(var i = 0; i < 16; i++) {
+  if (match.freeMod) {
+    for (var i = 0; i < 16; i++) {
       data.push({
         type: PacketGenerator.Type.UInt32,
-        value: match.slots[i].mods
+        value: match.getSlot(i).mods
       });
     }
   }

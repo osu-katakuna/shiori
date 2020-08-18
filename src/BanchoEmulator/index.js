@@ -4,6 +4,7 @@ var LoginRequest = require("./Requests/Login");
 var TokenManager = require("../TokenManager");
 const Packets = require('../BanchoEmulator/Packets');
 const PacketHandler = require("./PacketHandler");
+var CallHook = require("../PluginManager").CallHook;
 
 router.get('/', async(req, res) => {
   res.send("welcome to shiori-dev v0.3 - this is an page served from BanchoEmulator.");
@@ -25,9 +26,12 @@ router.post('/', async(req, res) => {
   if(!req.get("osu-token")) {
     LoginRequest({req, res, token});
   } else {
-    if(TokenManager.GetToken(token) == null) {
-      res.write(Packets.Notification("Oh no.. your session is invalid! Let me try to make your client to connect again!"));
-      res.write(Packets.ServerRestart(500));
+    if(TokenManager.GetToken(token) == null || TokenManager.GetToken(token).user == null) {
+      if(TokenManager.GetToken(token) != null) {
+        CallHook("onUserDisconnection", t.user);
+        TokenManager.DestroyToken(token);
+      }
+      res.write(Packets.ServerRestart(1500));
     } else {
       PacketHandler({req, res, token});
     }
@@ -39,6 +43,7 @@ router.post('/', async(req, res) => {
       delete q.queue[i];
     });
     q.queue = q.queue.filter(d => d != undefined);
+    q.resetTimeout();
   }
 
   res.end("", "binary");

@@ -6,6 +6,7 @@ const LoginParser = require('../Parsers/LoginParser');
 var crypto = require('crypto');
 var ExecuteHook = require("../../PluginManager").CallHook;
 var TokenManager = require("../../TokenManager");
+var ChannelManager = require("../../ChannelManager");
 
 module.exports = ({req, res, token}) => {
   var LoginParameter = LoginParser(req.body);
@@ -28,7 +29,7 @@ module.exports = ({req, res, token}) => {
   } else {
     if(TokenManager.FindTokenUserID(user.id) != null) {
       Logger.Success("Login: Authentication is successful, but this user is already online.");
-      res.write(Packets.Notification("You authenticated successfully, but it seems that you're already connected from somewhere.\nIf this problem persists, go to your profile page and revoke all associated tokens."));
+      res.write(Packets.ServerRestart(1500));
       return;
     }
 
@@ -52,6 +53,8 @@ module.exports = ({req, res, token}) => {
     });
 
     user.Token.NotifyFriends(user.friends.map(m => m.friend));
+
+    ChannelManager.JoinChannel("#osu", user);
 
     ExecuteHook("onUserAuthenticated", user);
   }

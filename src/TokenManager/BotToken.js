@@ -11,6 +11,10 @@ class BotToken extends Token {
     super(user, token);
   }
 
+  resetTimeout() {
+    return; // no timeout reset on here.
+  }
+
   get stats() {
     return {
       pp: 0,

@@ -6,5 +6,6 @@ var ChannelManager = require("../../ChannelManager");
 const { ReadString } = require('../Packets/Utils');
 
 module.exports = ({req, res, token, data}) => {
-  ChannelManager.JoinChannel(ReadString(data, 0), TokenManager.GetToken(token).user);
+  if((t = TokenManager.GetToken(token)) != null)
+    ChannelManager.JoinChannel(ReadString(data, 0), t.user);
 };

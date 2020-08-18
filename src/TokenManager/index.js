@@ -108,11 +108,18 @@ function AllOnlineUsers() {
 }
 
 function DestroyToken(token) {
-  const ChannelManager = require("../ChannelManager");
+  if(GetToken(token) == null) return;
 
-  let user = GetToken(token).user;
+  const t = GetToken(token);
+
+  const ChannelManager = require("../ChannelManager");
+  const MultiplayerManager = require("../MultiplayerManager");
+
+  let user = t.user;
 
   ChannelManager.GetJoinedChannelsOfUser(user).forEach(c => c.Leave(user)); // make user leave all channels
+  MultiplayerManager.LeaveLobby(t); // make user leave the lobby.
+  if(t.inMatch) MultiplayerManager.LeaveMatch(t, t.matchID);
 
   tokens = tokens.filter(x => x.token != token); // remove the token from the list.
 
