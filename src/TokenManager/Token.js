@@ -177,6 +177,10 @@ class Token {
   NotifyFailJoinMP() {
     Logger.Failure(`Token Base: Not implemented - NotifyFailJoinMP`);
   }
+
+  NotifyDisposeMultiplayerMatch(match) {
+    Logger.Failure(`Token Base: Not implemented - NotifyDisposeMultiplayerMatch(${match})`);
+  }
 }
 
 module.exports = Token;

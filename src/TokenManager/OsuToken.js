@@ -217,6 +217,10 @@ class OsuToken extends Token {
   NotifyUpdateMultiplayerMatch(match) {
     this.enqueue(Packets.NewMatchInfo(match));
   }
+
+  NotifyDisposeMultiplayerMatch(match) {
+    this.enqueue(Packets.DisposeMatch(match));
+  }
 }
 
 module.exports = OsuToken;

@@ -43,6 +43,13 @@ function JoinMatch(token, matchID, password = null) {
 function LeaveMatch(token, matchID) {
   var match = MultiplayerMatches.filter(m => m.id == matchID)[0];
   match.leave(token);
+
+  if(match.slots.length == 0) {
+    MultiplayerMatches = MultiplayerMatches.filter(m => m.id != matchID);
+    TokensInLobby.forEach(t => t.NotifyDisposeMultiplayerMatch(match));
+    return;
+  }
+
   MatchUpdate(match);
 }
 
