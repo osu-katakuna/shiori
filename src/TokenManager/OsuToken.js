@@ -221,6 +221,34 @@ class OsuToken extends Token {
   NotifyDisposeMultiplayerMatch(match) {
     this.enqueue(Packets.DisposeMatch(match));
   }
+
+  NotifyMPMatchStarting(match) {
+    this.enqueue(Packets.MatchStart(match));
+  }
+
+  NotifyMPMatchStarted() {
+    this.enqueue(Packets.AllPlayersLoadedMatch());
+  }
+
+  NotifyMPSkip() {
+    this.enqueue(Packets.MatchExecuteSkip());
+  }
+
+  NotifyMPComplete() {
+    this.enqueue(Packets.MatchComplete());
+  }
+
+  NotifyMPPlayerScoreUpdate(score) {
+    this.enqueue(Packets.ScoreFrame(score));
+  }
+
+  NotifyMPPlayerFailed(slot) {
+    this.enqueue(Packets.UserFailed(slot));
+  }
+
+  NotifyMPHost() {
+    this.enqueue(Packets.MatchTransferHost());
+  }
 }
 
 module.exports = OsuToken;

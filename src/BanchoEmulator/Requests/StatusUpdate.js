@@ -5,6 +5,8 @@ const Status = require('../../Models/Status').Status;
 var CallHook = require("../../PluginManager").CallHook;
 
 module.exports = ({req, res, token, data}) => {
+  if((t = TokenManager.GetToken(token)) == null) return;
+  
   const m = Parse(data);
 
   var newStatus = new Status();
@@ -15,6 +17,6 @@ module.exports = ({req, res, token, data}) => {
   newStatus.mods = m.mods;
   newStatus.gameMode = m.gameMode;
 
-  TokenManager.GetToken(token).user.status = newStatus;
+  t.user.status = newStatus;
   CallHook("onStatusUpdate", TokenManager.GetToken(token).user);
 };

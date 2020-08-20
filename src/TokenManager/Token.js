@@ -181,6 +181,38 @@ class Token {
   NotifyDisposeMultiplayerMatch(match) {
     Logger.Failure(`Token Base: Not implemented - NotifyDisposeMultiplayerMatch(${match})`);
   }
+
+  NotifyMPMatchStarting(match) {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPMatchStarting(${match})`);
+  }
+
+  NotifyMPMatchStarted() {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPMatchStarted`);
+  }
+
+  NotifyMPSkip() {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPSkip`);
+  }
+
+  NotifyMPComplete() {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPComplete`);
+  }
+
+  NotifyMPPlayerScoreUpdate(score) {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPPlayerScoreUpdate(${score})`);
+  }
+
+  NotifyMPPlayerFailed(slot) {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPPlayerFailed(${slot})`);
+  }
+
+  NotifyMPHost() {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPHost`);
+  }
+
+  NotifyMPKick() {
+    Logger.Failure(`Token Base: Not implemented - NotifyMPKick`);
+  }
 }
 
 module.exports = Token;

@@ -12,8 +12,11 @@ module.exports = ({token, data}) => {
       hash: parsed.beatmapHash,
       id: parsed.beatmapHash
     };
-    const password = parsed.password == '' || parsed.password <= 0 ? null : parsed.password;
+    var password = parsed.password == '' || parsed.password <= 0 ? null : parsed.password;
+    let privateMatch = password.indexOf("//private") > 0;
 
-    MultiplayerManager.NewMatch(parsed.name, t, password, maxPlayers, false, parsed.gameMode);
+    if(password.indexOf("//private") > 0) password = password.slice(0, password.indexOf("//private"));
+
+    MultiplayerManager.NewMatch(parsed.name, t, password, maxPlayers, !privateMatch, parsed.gameMode);
   }
 };

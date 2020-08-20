@@ -31,7 +31,7 @@ function MatchUpdate(match) {
 function JoinMatch(token, matchID, password = null) {
   var match = MultiplayerMatches.filter(m => m.id == matchID)[0];
 
-  if(match == null || match.slots.length + 1 > match.slots.maxSlots || (match.password != null && match.password == password)) {
+  if(token.restricted || match == null || match.slots.length + 1 > match.slots.maxSlots || (match.password != null && match.password != password)) {
     token.NotifyFailJoinMP();
     return;
   }
@@ -42,9 +42,11 @@ function JoinMatch(token, matchID, password = null) {
 
 function LeaveMatch(token, matchID) {
   var match = MultiplayerMatches.filter(m => m.id == matchID)[0];
+  if(match == null) return;
+
   match.leave(token);
 
-  if(match.slots.length == 0) {
+  if(match.slots.filter(s => s.status & 124).length == 0) {
     MultiplayerMatches = MultiplayerMatches.filter(m => m.id != matchID);
     TokensInLobby.forEach(t => t.NotifyDisposeMultiplayerMatch(match));
     return;
@@ -55,6 +57,13 @@ function LeaveMatch(token, matchID) {
 
 function NewMatch(name, owner, password = null, maxPlayers = 8, publicHistory = false, gameMode = 0) {
   const token = owner instanceof Token ? owner : owner.Token;
+
+  // add checks: restricted players can't join/create multiplayer matches!
+  if(token.restricted) {
+    token.NotifyFailJoinMP();
+    return;
+  }
+
   var match = new MultiplayerMatch(name, token, password, maxPlayers, publicHistory);
 
   match.id = getNewMatchID();
