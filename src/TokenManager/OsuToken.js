@@ -114,6 +114,14 @@ class OsuToken extends Token {
   }
 
   ChannelChange(channel) {
+    if(channel == "#spectator") {
+      let c = ChannelManager.GetSpectatorChannelFor(this.user);
+
+      if(c != null)
+        this.enqueue(Packets.ChannelInfo(c));
+
+      return;
+    }
     this.enqueue(Packets.ChannelInfo(ChannelManager.GetChannel(channel)));
   }
 
@@ -170,6 +178,13 @@ class OsuToken extends Token {
       });
     }
 
+    if(ChannelManager.GetSpectatorChannelFor(this.user) == null) {
+      ChannelManager.RegisterSpectatorChannel(this.user);
+      this.enqueue(Packets.AutojoinChannel(ChannelManager.GetSpectatorChannelFor(this.user)));
+    }
+
+    user.Token.enqueue(Packets.AutojoinChannel(ChannelManager.GetSpectatorChannelFor(this.user)));
+
     this.mySpectators.push({
       user,
       hasMap: true
@@ -182,6 +197,9 @@ class OsuToken extends Token {
       this.enqueue(Packets.SpectatorLeft(user));
       this.mySpectators.forEach(u => u.user.Token.enqueue(Packets.FellowSpectatorLeft(user)));
     }
+    // if there are no more spectators, destroy the spectator channel allocated for us.
+    if(this.mySpectators.length == 0 && ChannelManager.GetSpectatorChannelFor(this.user) != null)
+      ChannelManager.DestroySpectatorChannel(this.user);
   }
 
   NotifySpectatorNoMap(user) {

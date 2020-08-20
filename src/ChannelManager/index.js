@@ -34,7 +34,8 @@ var Logger = require('../logging');
 
 const ChannelType = {
   PUBLIC_CHANNEL: 0,
-  PROTECTED_CHANNEL: 1
+  PROTECTED_CHANNEL: 1,
+  RESERVED_CHANNEL: 2
 }
 
 class Channel {
@@ -45,7 +46,7 @@ class Channel {
     this._members = [];
     this.permissionRequired = null;
 
-    this.autoJoin = true;
+    this.autoJoin = false;
   }
 
   get description() {
@@ -57,7 +58,7 @@ class Channel {
   }
 
   get members() {
-    return this._members.map(i => require("../TokenManager").FindTokenUserID(i).user).filter(u => u != undefined); // do checks if the tokens do still exist
+    return this._members.map(i => require("../TokenManager").FindTokenUserID(i)).filter(u => u != undefined); // do checks if the tokens do still exist
   }
 
   get memberCount() {
@@ -65,7 +66,7 @@ class Channel {
   }
 
   SendMessage(from, message) {
-    this._members.filter(i => i != from.id).map(i => require("../TokenManager").FindTokenUserID(i)).forEach(t => t.Message(from, this.name, message))
+    this.members.filter(m => m.user.id !== from.id).forEach(t => t.Message(from, this.name, message));
   }
 
   Join(who) {
@@ -78,8 +79,38 @@ class Channel {
   }
 }
 
+class SpectatorChannel extends Channel {
+  constructor(player = null) {
+    super();
+    this.name = "#spectator";
+    this.type = ChannelType.RESERVED_CHANNEL;
+    this._description = "Spectator channel.";
+    this.spectatedPlayer = player;
+  }
+
+  get members() {
+    return this.spectatedPlayer.Token.mySpectators.map(s => s.user).concat(this.spectatedPlayer).map(i => i.Token).filter(u => u != undefined); // do checks if the tokens do still exist
+  }
+}
+
 function GetChannel(channel) {
-  return RegisteredChannels.filter(c => c.name == channel)[0];
+  return RegisteredChannels.filter(c => c.type != ChannelType.RESERVED_CHANNEL && c.name == channel)[0];
+}
+
+function GetSpectatorChannelFor(who) {
+  return RegisteredChannels.filter(c => c instanceof SpectatorChannel && c.spectatedPlayer === who)[0];
+}
+
+function RegisterSpectatorChannel(who) {
+  Logger.Info(`CHANNEL MANAGER: Created spectator channel for user ${who.name}`);
+  RegisteredChannels.push(new SpectatorChannel(who));
+}
+
+function DestroySpectatorChannel(who) {
+  Logger.Info(`CHANNEL MANAGER: Destroyed spectator channel of user ${who.name}`);
+  GetSpectatorChannelFor(who).members.forEach(m => m.KickChannel("#spectator"));
+  who.Token.KickChannel("#spectator");
+  RegisteredChannels = RegisteredChannels.filter(c => c instanceof SpectatorChannel && c.spectatedPlayer !== who);
 }
 
 function JoinChannel(channel, who) {
@@ -87,9 +118,9 @@ function JoinChannel(channel, who) {
 
   if(channel[0] != "#") to = `#${channel}`;
 
-  if(channel == "#spectator") {
-    Logger.Failure(`CHANNEL MANAGER: ${who.name} tried to join the spectator channel. This is not handled YET!`);
-    TokenManager.KickUserFromChannel(who.id, channel);
+  if(channel == "#spectator" && who.spectatedUser != null) {
+    TokenManager.InformChannelChange(channel);
+    TokenManager.JoinedUserChannel(who.id, channel);
     return;
   }
 
@@ -120,7 +151,7 @@ function LeaveChannel(channel, who) {
   if(channel[0] != "#") return;
 
   if(channel == "#spectator") {
-    Logger.Failure(`CHANNEL MANAGER: ${who.name} tried to leave the spectator channel. This is not handled YET!`);
+    TokenManager.InformChannelChange(channel);
     return;
   }
 
@@ -144,8 +175,17 @@ function SendMessage(to, by, message) {
   if(to[0] != "#") return;
 
   if(to == "#spectator") {
-    Logger.Failure(`CHANNEL MANAGER: ${by.name} tried to send an message to the spectator channel. This is not handled YET!`);
-    return;
+    let ch = by.Token.spectatedUser == null ? GetSpectatorChannelFor(by) : GetSpectatorChannelFor(by.Token.spectatedUser);
+    let name = by.Token.spectatedUser == null ? by.name : by.Token.spectatedUser.name;
+
+    if(ch != null) {
+      Logger.Info(`CHANNEL MANAGER: ${by.name} => SPECTATOR(${name}): ${message}`);
+      if(!PluginManager.CallHook("onPublicMessage", ch, by, message))
+        ch.SendMessage(by, message);
+      else Logger.Info(`CHANNEL MANAGER: A plugin managed the message. The message will be not sent over.`);
+
+      return;
+    }
   }
 
   var ch = GetChannel(to);
@@ -168,7 +208,7 @@ function SendMessage(to, by, message) {
 
 function GetAllChannels(who = null) {
   return RegisteredChannels.map(c => {
-    if(c.type == ChannelType.PROTECTED_CHANNEL && c.permissionRequired != null && who != null && !who.hasPermission(c.permissionRequired)) return;
+    if(c.type == ChannelType.RESERVED_CHANNEL || (c.type == ChannelType.PROTECTED_CHANNEL && c.permissionRequired != null && who != null && !who.hasPermission(c.permissionRequired))) return;
     return c;
   }).filter(x => x != undefined);
 }
@@ -194,7 +234,7 @@ function RegisterChannels() {
   });
 }
 
-RegisterChannels()
+RegisterChannels();
 
 module.exports = {
   GetChannel,
@@ -202,5 +242,8 @@ module.exports = {
   GetAllChannels,
   JoinChannel,
   LeaveChannel,
-  GetJoinedChannelsOfUser
+  GetJoinedChannelsOfUser,
+  GetSpectatorChannelFor,
+  RegisterSpectatorChannel,
+  DestroySpectatorChannel
 };
