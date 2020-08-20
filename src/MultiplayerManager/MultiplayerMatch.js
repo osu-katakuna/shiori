@@ -294,6 +294,16 @@ class MultiplayerMatch {
     this.update();
   }
 
+  playerToggleTeam(player) {
+    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    const players = this.slots.filter(slot => slot.player === player);
+
+    if(players.length == 1) {
+      players[0].team = players[0].team == 0 ? 1 : 0; // very professional way yes
+      this.update();
+    }
+  }
+
   setHost(newHost) {
     if(!(newHost instanceof Token)) throw new Error("newHost must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
 
