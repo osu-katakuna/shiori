@@ -7,11 +7,13 @@ module.exports = ({token, data}) => {
     const parsed = Parse(data);
 
     const maxPlayers = parsed.slots.filter(slot => slot.status == 1).length;
+    
     const beatmap = {
       name: parsed.beatmapName,
       hash: parsed.beatmapHash,
       id: parsed.beatmapHash
     };
+
     var password = parsed.password == '' || parsed.password <= 0 ? null : parsed.password;
     let privateMatch = password != null && password.indexOf("//private") > 0;
 

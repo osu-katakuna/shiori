@@ -38,6 +38,14 @@ class MultiplayerSlot {
   }
 }
 
+class MultiplayerMatchResult {
+  constructor(match = null, results = []) {
+    if(!(match instanceof MultiplayerMatch)) throw new Error("match must be an instance of MultiplayerMatch"); // these stupid checks are required!! we don't want misuses please!
+    this.match = match;
+    this.results = results;
+  }
+}
+
 class MultiplayerMatch {
   constructor(name, host, password = null, maxPlayers = 8, publicHistory = false) {
     if(!(host instanceof Token)) throw new Error("host must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
@@ -179,6 +187,8 @@ class MultiplayerMatch {
   finished(player) {
     if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
 
+    const RunEvent = require('../PluginManager').CallHook;
+
     // set our finish state
     const allPlayers = this.slots.filter(slot => slot.player === player);
 
@@ -194,6 +204,10 @@ class MultiplayerMatch {
         slot.requestedSkip = false;
       });
       finishedPlayers.forEach(slot => slot.player.NotifyMPComplete());
+      RunEvent("onMPMatchComplete", new MultiplayerMatchResult(this, finishedPlayers.map(x => ({
+        score: x.score,
+        player: x.player
+      }))));
     }
 
     this.update();
@@ -342,8 +356,11 @@ class MultiplayerMatch {
 
   update() {
     const MultiplayerManager = require('./index');
+    const RunEvent = require('../PluginManager').CallHook;
+
     this.slots.forEach(slot => { if(slot.status & 124) slot.player.NotifyMPLobby(this); });
     MultiplayerManager.MatchUpdate(this);
+    RunEvent("onMPMatchUpdate", this);
   }
 
   getSlot(slot) {

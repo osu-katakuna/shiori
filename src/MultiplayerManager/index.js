@@ -2,6 +2,7 @@ const Logger = require('../logging');
 const MultiplayerMatch = require('./MultiplayerMatch');
 const TokenManager = require('../TokenManager');
 const Token = require('../TokenManager/Token');
+const RunEvent = require('../PluginManager').CallHook;
 
 var TokensInLobby = [];
 var MultiplayerMatches = [];
@@ -47,6 +48,7 @@ function LeaveMatch(token, matchID) {
   match.leave(token);
 
   if(match.slots.filter(s => s.status & 124).length == 0) {
+    RunEvent("onMPMatchDisband", match);
     MultiplayerMatches = MultiplayerMatches.filter(m => m.id != matchID);
     TokensInLobby.forEach(t => t.NotifyDisposeMultiplayerMatch(match));
     return;
@@ -71,6 +73,7 @@ function NewMatch(name, owner, password = null, maxPlayers = 8, publicHistory = 
 
   MultiplayerMatches.push(match); // add match to list
   TokensInLobby.forEach(t => t.NotifyNewMultiplayerMatch(match)); // notify players
+  RunEvent("onMPMatchCreation", match);
 
   match.join(token); // make us join the match.
 
