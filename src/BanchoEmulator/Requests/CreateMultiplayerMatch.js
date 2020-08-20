@@ -13,9 +13,9 @@ module.exports = ({token, data}) => {
       id: parsed.beatmapHash
     };
     var password = parsed.password == '' || parsed.password <= 0 ? null : parsed.password;
-    let privateMatch = password.indexOf("//private") > 0;
+    let privateMatch = password != null && password.indexOf("//private") > 0;
 
-    if(password.indexOf("//private") > 0) password = password.slice(0, password.indexOf("//private"));
+    if(password != null && password.indexOf("//private") > 0) password = password.slice(0, password.indexOf("//private"));
 
     MultiplayerManager.NewMatch(parsed.name, t, password, maxPlayers, !privateMatch, parsed.gameMode);
   }

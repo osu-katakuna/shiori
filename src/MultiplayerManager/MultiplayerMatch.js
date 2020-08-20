@@ -142,9 +142,9 @@ class MultiplayerMatch {
   start() {
     const readyPlayers = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Ready);
 
-    if(readyPlayers.length == this.slots.length) {
+    if(readyPlayers.length == this.slots.filter(s => s.status & 124).length) {
       // everyone is ready!
-      this.slots.forEach(slot => {
+      readyPlayers.forEach(slot => {
         slot.status = MultiplayerSlotStatus.Playing;
         slot.loadedMap = false;
         slot.requestedSkip = false;
@@ -152,7 +152,10 @@ class MultiplayerMatch {
       });
 
       this.update();
-      this.slots.forEach(slot => slot.player.NotifyMPMatchStarting(this));
+      this.slots.forEach(slot => {
+        if(slot.status & 124)
+          slot.player.NotifyMPMatchStarting(this)
+      });
     }
   }
 
@@ -168,7 +171,7 @@ class MultiplayerMatch {
     const skippedPlayers = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing && slot.requestedSkip);
 
     if(skippedPlayers.length == players.length)
-      this.slots.forEach(slot => slot.player.NotifyMPSkip());
+      skippedPlayers.forEach(slot => slot.player.NotifyMPSkip());
 
     this.update();
   }
@@ -176,21 +179,21 @@ class MultiplayerMatch {
   finished(player) {
     if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
 
-    // set our skip state
+    // set our finish state
     const allPlayers = this.slots.filter(slot => slot.player === player);
 
     if(allPlayers.length == 1) allPlayers[0].finished = true;
 
     const players = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing);
-    const skippedPlayers = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing && slot.finished);
+    const finishedPlayers = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing && slot.finished);
 
-    if(skippedPlayers.length == players.length) {
-      this.slots.forEach(slot => {
+    if(finishedPlayers.length == players.length) {
+      finishedPlayers.forEach(slot => {
         slot.status = MultiplayerSlotStatus.NotReady;
         slot.loadedMap = false;
         slot.requestedSkip = false;
       });
-      this.slots.forEach(slot => slot.player.NotifyMPComplete());
+      finishedPlayers.forEach(slot => slot.player.NotifyMPComplete());
     }
 
     this.update();
@@ -285,7 +288,7 @@ class MultiplayerMatch {
 
     if(readyPlayers.length == players.length) {
       this.playing = true;
-      this.slots.forEach(slot => slot.player.NotifyMPMatchStarted());
+      readyPlayers.forEach(slot => slot.player.NotifyMPMatchStarted());
     }
 
     this.update();
