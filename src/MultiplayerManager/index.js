@@ -1,6 +1,7 @@
 const Logger = require('../logging');
 const MultiplayerMatch = require('./MultiplayerMatch');
 const TokenManager = require('../TokenManager');
+const ChannelManager = require('../ChannelManager');
 const Token = require('../TokenManager/Token');
 const RunEvent = require('../PluginManager').CallHook;
 
@@ -37,6 +38,10 @@ function JoinMatch(token, matchID, password = null) {
     return;
   }
 
+  if(ChannelManager.GetMultiplayerChannelFor(match) != null) {
+    token.NotifyAutoJoinChannel(ChannelManager.GetMultiplayerChannelFor(match));
+  }
+
   match.join(token);
   MatchUpdate(match);
 }
@@ -45,10 +50,15 @@ function LeaveMatch(token, matchID) {
   var match = MultiplayerMatches.filter(m => m.id == matchID)[0];
   if(match == null) return;
 
+  if(ChannelManager.GetMultiplayerChannelFor(match) != null) {
+    token.KickChannel("#multiplayer");
+  }
+
   match.leave(token);
 
   if(match.slots.filter(s => s.status & 124).length == 0) {
     RunEvent("onMPMatchDisband", match);
+    ChannelManager.DestroyMultiplayerChannel(match);
     MultiplayerMatches = MultiplayerMatches.filter(m => m.id != matchID);
     TokensInLobby.forEach(t => t.NotifyDisposeMultiplayerMatch(match));
     return;
@@ -73,6 +83,8 @@ function NewMatch(name, owner, password = null, maxPlayers = 8, publicHistory = 
 
   MultiplayerMatches.push(match); // add match to list
   TokensInLobby.forEach(t => t.NotifyNewMultiplayerMatch(match)); // notify players
+  ChannelManager.RegisterMultiplayerChannel(match); // create MP Chat room
+  token.NotifyAutoJoinChannel(ChannelManager.GetMultiplayerChannelFor(match));
   RunEvent("onMPMatchCreation", match);
 
   match.join(token); // make us join the match.

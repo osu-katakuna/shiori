@@ -213,6 +213,10 @@ class Token {
   NotifyMPKick() {
     Logger.Failure(`Token Base: Not implemented - NotifyMPKick`);
   }
+
+  NotifyAutoJoinChannel(channel) {
+    Logger.Failure(`Token Base: Not implemented - NotifyAutoJoinChannel(${channel})`);
+  }
 }
 
 module.exports = Token;

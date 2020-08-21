@@ -93,6 +93,20 @@ class SpectatorChannel extends Channel {
   }
 }
 
+class MultiplayerChannel extends Channel {
+  constructor(match = null) {
+    super();
+    this.name = "#multiplayer";
+    this.type = ChannelType.RESERVED_CHANNEL;
+    this._description = "Multiplayer room channel.";
+    this.match = match;
+  }
+
+  get members() {
+    return this.match.slots.filter(slot => slot.status & 124).map(s => s.player).filter(u => u != undefined);
+  }
+}
+
 function GetChannel(channel) {
   return RegisteredChannels.filter(c => c.type != ChannelType.RESERVED_CHANNEL && c.name == channel)[0];
 }
@@ -113,12 +127,32 @@ function DestroySpectatorChannel(who) {
   RegisteredChannels = RegisteredChannels.filter(c => c instanceof SpectatorChannel && c.spectatedPlayer !== who);
 }
 
+function GetMultiplayerChannelFor(match) {
+  return RegisteredChannels.filter(c => c instanceof MultiplayerChannel && c.match === match)[0];
+}
+
+function RegisterMultiplayerChannel(match) {
+  Logger.Info(`CHANNEL MANAGER: Created Multiplayer channel for match #${match.id}`);
+  RegisteredChannels.push(new MultiplayerChannel(match));
+}
+
+function DestroyMultiplayerChannel(match) {
+  Logger.Info(`CHANNEL MANAGER: Destroyed Multiplayer channel of user ${who.name}`);
+  RegisteredChannels = RegisteredChannels.filter(c => c instanceof SpectatorChannel && c.spectatedPlayer !== who);
+}
+
 function JoinChannel(channel, who) {
   const TokenManager = require("../TokenManager");
 
   if(channel[0] != "#") to = `#${channel}`;
 
   if(channel == "#spectator" && who.spectatedUser != null) {
+    TokenManager.InformChannelChange(channel);
+    TokenManager.JoinedUserChannel(who.id, channel);
+    return;
+  }
+
+  if(channel == "#multiplayer" && who.inMatch) {
     TokenManager.InformChannelChange(channel);
     TokenManager.JoinedUserChannel(who.id, channel);
     return;
@@ -155,6 +189,11 @@ function LeaveChannel(channel, who) {
     return;
   }
 
+  if(channel == "#multiplayer") {
+    TokenManager.InformChannelChange(channel);
+    return;
+  }
+
   var ch = GetChannel(channel);
 
   if(ch == null) {
@@ -180,6 +219,19 @@ function SendMessage(to, by, message) {
 
     if(ch != null) {
       Logger.Info(`CHANNEL MANAGER: ${by.name} => SPECTATOR(${name}): ${message}`);
+      if(!PluginManager.CallHook("onPublicMessage", ch, by, message))
+        ch.SendMessage(by, message);
+      else Logger.Info(`CHANNEL MANAGER: A plugin managed the message. The message will be not sent over.`);
+
+      return;
+    }
+  }
+
+  if(to == "#multiplayer") {
+    let ch = RegisteredChannels.filter(i => i instanceof MultiplayerChannel && i.match.id == by.Token.matchID)[0];
+
+    if(ch != null) {
+      Logger.Info(`CHANNEL MANAGER: ${by.name} => MULTIPLAYER(MP#${ch.match.id}): ${message}`);
       if(!PluginManager.CallHook("onPublicMessage", ch, by, message))
         ch.SendMessage(by, message);
       else Logger.Info(`CHANNEL MANAGER: A plugin managed the message. The message will be not sent over.`);
@@ -245,5 +297,8 @@ module.exports = {
   GetJoinedChannelsOfUser,
   GetSpectatorChannelFor,
   RegisterSpectatorChannel,
-  DestroySpectatorChannel
+  DestroySpectatorChannel,
+  GetMultiplayerChannelFor,
+  RegisterMultiplayerChannel,
+  DestroyMultiplayerChannel
 };

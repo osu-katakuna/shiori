@@ -3,6 +3,7 @@ const Token = require('./Token');
 const Packets = require('../BanchoEmulator/Packets');
 const Logger = require('../logging');
 const ChannelManager = require('../ChannelManager');
+const MultiplayerManager = require('../MultiplayerManager');
 const Status = require('../Models/Status').Status;
 const StatusType = require('../Models/Status').StatusType;
 
@@ -122,6 +123,19 @@ class OsuToken extends Token {
 
       return;
     }
+
+    if(channel == "#multiplayer") {
+      let match = MultiplayerManager.GetMatchID(this.matchID);
+      if(match == null) return;
+
+      let c = ChannelManager.GetMultiplayerChannelFor(match);
+
+      if(c != null)
+        this.enqueue(Packets.ChannelInfo(c));
+
+      return;
+    }
+
     this.enqueue(Packets.ChannelInfo(ChannelManager.GetChannel(channel)));
   }
 
@@ -189,6 +203,10 @@ class OsuToken extends Token {
       user,
       hasMap: true
     });
+  }
+
+  NotifyAutoJoinChannel(channel) {
+    this.enqueue(Packets.AutojoinChannel(channel));
   }
 
   NotifySpectatorLeft(user) {

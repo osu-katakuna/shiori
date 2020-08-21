@@ -14,7 +14,7 @@ module.exports = (channel) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.Int16,
-      value: channel.members
+      value: channel.memberCount
     }
   ]
 });
