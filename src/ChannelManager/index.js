@@ -137,7 +137,7 @@ function RegisterMultiplayerChannel(match) {
 }
 
 function DestroyMultiplayerChannel(match) {
-  Logger.Info(`CHANNEL MANAGER: Destroyed Multiplayer channel of user ${who.name}`);
+  Logger.Info(`CHANNEL MANAGER: Destroyed Multiplayer channel of match #${match.id}`);
   RegisteredChannels = RegisteredChannels.filter(c => c instanceof SpectatorChannel && c.spectatedPlayer !== who);
 }
 
