@@ -87,7 +87,7 @@ function LoadPlugins() {
       return;
     }
 
-    if(package.scope == null || package.scope.toLowerCase() != "shiori" || package.scope.toLowerCase() != "universal") {
+    if(package.scope == null || (package.scope.toLowerCase() != "shiori" && package.scope.toLowerCase() != "universal")) {
       Logger.Failure(`Plugin '${p}' is not designed to be used with shiori! This plugin ${package.scope == null ? "has no scope defined!" : "is designed to be used with " + package.scope}`);
       return;
     }

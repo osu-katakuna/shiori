@@ -5,9 +5,10 @@ var TokenManager = require("../TokenManager");
 const Packets = require('../BanchoEmulator/Packets');
 const PacketHandler = require("./PacketHandler");
 var CallHook = require("../PluginManager").CallHook;
+const VersionInfo = require('../Shiori/VersionInfo');
 
 router.get('/', async(req, res) => {
-  res.send("welcome to shiori-dev v0.3 - this is an page served from BanchoEmulator.");
+  res.send(`welcome to shiori ${VersionInfo.formatted} - this is an page served from BanchoEmulator.`);
 });
 
 router.post('/', async(req, res) => {

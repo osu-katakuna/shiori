@@ -6,6 +6,7 @@ var RedisSubsystem = require("../Redis");
 var ChannelManager = require('../ChannelManager');
 var ShioriRedisEvents = require('./RedisEvents');
 var Database = require("../Database");
+const VersionInfo = require('./VersionInfo');
 
 function Start() {
   // reset logger timing
@@ -14,7 +15,7 @@ function Start() {
   const serverStartTime = new Date().getTime();
 
   // let the user know we started.
-  Logger.Info("Welcome to katakuna!shiori.");
+  Logger.Info(`Welcome to katakuna!shiori ${VersionInfo.formatted}`);
 
   // go and load all plugins
   Logger.Info("Loading plugins...");
