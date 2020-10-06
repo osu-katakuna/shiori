@@ -1,6 +1,7 @@
 function Initialize() {
   const RedisSubsystem = require("../Redis");
   const TokenManager = require("../TokenManager");
+  const ChannelManager = require("../ChannelManager");
   const Logger = require("../logging");
 
   RedisSubsystem.SubscribeToChannel("shiori:ban", function(userID) {
@@ -51,7 +52,7 @@ function Initialize() {
   RedisSubsystem.SubscribeToChannel("shiori:mute", function(d) {
     let obj = JSON.parse(d);
 
-    if(obj.userID == null && obj.time == null) return;
+    if(obj.userID == null || obj.time == null) return;
 
     let reason = obj.reason ? obj.reason : "no reason provided";
 
@@ -59,6 +60,17 @@ function Initialize() {
 
     if((t = TokenManager.FindTokenUserID(obj.userID)) != null)
       t.user.Mute(reason, obj.time);
+  });
+
+  RedisSubsystem.SubscribeToChannel("shiori:message", function(d) {
+    let obj = JSON.parse(d);
+
+    if(obj.channel == null || obj.userID == null || obj.message == null) return;
+
+    Logger.Info(`REDIS: Received command to send message on ${obj.channel}(${obj.message}) as UID ${obj.userID}.`);
+
+    if((t = TokenManager.FindTokenUserID(obj.userID)) != null)
+      ChannelManager.SendMessage(obj.channel, t.user, obj.message);
   });
 }
 

@@ -13,6 +13,10 @@ function OnMessageEvent(channel, args) {
   SubscribedChannels.filter(x => x.channel == channel).forEach(s => s.callback(args));
 }
 
+function Publish(channel, args) {
+  ClientInstance.publish(channel, args);
+}
+
 function ErrorHandler(err) {
   Logger.Failure("REDIS:", err);
 }
@@ -77,5 +81,6 @@ module.exports = {
   SubscribeToChannel,
   UnsubscribeChannel,
   Set,
-  Get
+  Get,
+  Publish
 };
