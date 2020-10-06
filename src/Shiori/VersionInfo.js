@@ -12,7 +12,7 @@ YOU HAVE BEEN WARNED!
 const versionInfo = {
   major: 2,
   minor: 14,
-  patch: 19,
+  patch: 20,
   version: "beta"
 };
 

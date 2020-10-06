@@ -121,10 +121,11 @@ function DestroyToken(token) {
   MultiplayerManager.LeaveLobby(t); // make user leave the lobby.
   if(t.inMatch) MultiplayerManager.LeaveMatch(t, t.matchID);
 
-  tokens = tokens.filter(x => x.token != token); // remove the token from the list.
+  t.stopTimeout();
+  tokens = tokens.filter(x => x !== t); // remove the token from the list.
 
   RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count
-  Logger.Success(`Destroyed token ${token} of user ${user.name}`);
+  Logger.Success(`Destroyed token ${token} of user ${user.name}. Online users: ${OnlineUsersCount()}`);
 }
 
 module.exports = {

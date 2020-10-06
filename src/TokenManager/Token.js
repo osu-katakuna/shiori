@@ -24,6 +24,10 @@ class Token {
     this.resetTimeout();
   }
 
+  stopTimeout() {
+    if(this.timeout != null) clearTimeout(this.timeout);
+  }
+
   resetTimeout() {
     if(this.timeout != null) clearTimeout(this.timeout);
 
