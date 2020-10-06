@@ -58,7 +58,7 @@ class Channel {
   }
 
   get members() {
-    return this._members.map(i => require("../TokenManager").FindTokenUserID(i)).filter(u => u != undefined); // do checks if the tokens do still exist
+    return this._members.filter((i, pos, self) => self.indexOf(i) == pos).map(i => require("../TokenManager").FindTokenUserID(i)).filter(u => u != undefined); // do checks if the tokens do still exist and remove duplicates
   }
 
   get memberCount() {
@@ -70,6 +70,7 @@ class Channel {
   }
 
   Join(who) {
+    if(this._members.includes(who.id)) return; // check if the ID isn't joined already...
     this._members.push(who.id);
   }
 
