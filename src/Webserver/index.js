@@ -24,10 +24,13 @@ function StartServer(callback = (() => {})) {
   app.use(function (req, res, next) {
     const Logger = require("../logging");
     Logger.Info(`${req.method} ${req.path} - ${req.ip} - ${new Date()} - ${req.get('User-Agent')}`);
-  	req.pipe(require('concat-stream')(function(data){
-  		req.body = data;
-  		next();
-  	}));
+    if(req.get("Content-Type") != null && req.get("Content-Type").toLowerCase().indexOf("multipart/form-data") >= 0) next();
+    else {
+      req.pipe(require('concat-stream')(function(data){
+    		req.body = data;
+    		next();
+    	}));
+    }
   });
 
   app.use(GlobalRouter);

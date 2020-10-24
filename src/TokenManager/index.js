@@ -1,25 +1,14 @@
 const uuid = require('uuid').v4;
 const Logger = require("../logging");
 const OsuToken = require("./OsuToken");
-const BotToken = require("./BotToken");
 const RedisSubsystem = require("../Redis");
 
 var tokens = [];
 
-function CreateToken(user, token = uuid()) {
+function CreateToken(user, token = uuid(), tokenType = OsuToken, ...extra) {
   // create the token
-  tokens.push(new OsuToken(user, token));
-  Logger.Success(`Created token ${token} for player ${user.name}`);
-
-  RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count
-
-  return token; // return the token
-}
-
-function RegisterBot(user, token = uuid()) {
-  // create the token
-  tokens.push(new BotToken(user, token));
-  Logger.Success(`Created token ${token} for bot ${user.name}`);
+  tokens.push(new tokenType(user, token, ...extra));
+  Logger.Success(`Created token(${tokenType.constructor.name}) ${token} for player ${user.name}`);
 
   RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count
 
@@ -100,7 +89,7 @@ function OnlineUsersCount() {
 }
 
 function OnlineUsers() {
-  return tokens.filter((value, index, self) => self.indexOf(value) === index && !(value instanceof BotToken)).map(t => t.user); // filter tokens; we don't need BOT TOKENS!
+  return tokens.filter((value, index, self) => self.indexOf(value) === index && !value.bot).map(t => t.user); // filter tokens; we don't need BOT TOKENS!
 }
 
 function AllOnlineUsers() {
@@ -130,7 +119,6 @@ function DestroyToken(token) {
 
 module.exports = {
   CreateToken,
-  RegisterBot,
   GetToken,
   FindTokenUsername,
   FindTokenUserID,

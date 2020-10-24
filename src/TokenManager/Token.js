@@ -4,6 +4,7 @@ const Status = require("../Models/Status").Status;
 
 class Token {
   constructor(user, token) {
+    this.bot = false;
     this.user = user;
 
     this.token = token;

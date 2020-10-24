@@ -10,6 +10,7 @@ class User extends Model {
     this.userCountry = 0; // UNKNOWN
     this.abortLogin = false;
     this.token = null;
+    this.countryCode = "";
 
     this.cachedStats = [];
 
@@ -17,6 +18,7 @@ class User extends Model {
       this.cachedStats[i] = {
         pp: 1337,
         rank: 13,
+        countryRank: 13,
         totalScore: 13,
         totalRankedScore: 1,
         playCount: 1,
@@ -50,6 +52,7 @@ class User extends Model {
     this.cachedStats[gamemode] = {
       pp: 1337,
       rank: 13,
+      countryRank: 13,
       totalScore: 13,
       totalRankedScore: 1,
       playCount: 1,
@@ -71,6 +74,8 @@ class User extends Model {
   }
 
   set country(c) {
+    this.countryCode = c;
+    if(c == "A2") this.countryCode = "Sattelite Provider";
     this.userCountry = CountryList[c] ? CountryList[c] : 0;
   }
 

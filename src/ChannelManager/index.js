@@ -38,6 +38,8 @@ const ChannelType = {
   RESERVED_CHANNEL: 2
 }
 
+const MAXIMUM_CACHE_LENGTH = 100;
+
 class Channel {
   constructor() {
     this.name = null;
@@ -45,6 +47,8 @@ class Channel {
     this._description = null;
     this._members = [];
     this.permissionRequired = null;
+    this.messageCache = [];
+    this._mid = 1;
 
     this.autoJoin = false;
   }
@@ -66,7 +70,15 @@ class Channel {
   }
 
   SendMessage(from, message) {
-    this.members.filter(m => m.user.id !== from.id).forEach(t => t.Message(from, this.name, message));
+    if(this.messageCache.length + 1 > MAXIMUM_CACHE_LENGTH) this.messageCache = this.messageCache.slice(1); // remove first message make sure to keep max objects son
+    let md = {
+      from,
+      message,
+      id: this._mid++,
+      time: new Date()
+    };
+    this.messageCache.push(md);
+    this.members.filter(m => m.user.id !== from.id).forEach(t => t.Message(from, this.name, message, md.id, md.time));
   }
 
   Join(who) {
