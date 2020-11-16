@@ -62,6 +62,12 @@ class Model {
     ]]);
   }
 
+  static whereValue(values) {
+    return this.where([
+      ...values.map(x => [x[0], this[x[1]] == null ? x[1] : this[x[1]]])
+    ]);
+  }
+
   save() {
     let columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME);
 

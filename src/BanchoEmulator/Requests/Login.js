@@ -38,7 +38,7 @@ module.exports = ({req, res, token}) => {
     user.token = TokenManager.CreateToken(user, token); // create token
 
     if(!ExecuteHook("onUserAuthentication", user) && user.abortLogin) {
-      Logger.Info("Login aborted; probably by an plugin.");
+      Logger.Info("Login aborted; probably by a plugin.");
       return;
     }
 

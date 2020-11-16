@@ -2,6 +2,7 @@ const Model = require("../Model");
 const CountryList = require('../BanchoEmulator/Constants/Country');
 const TokenManager = require("../TokenManager");
 const UserFriend = require("./UserFriend");
+const UserStats = require("./UserStats");
 
 class User extends Model {
   constructor() {
@@ -13,19 +14,6 @@ class User extends Model {
     this.countryCode = "";
 
     this.cachedStats = [];
-
-    for(var i = 0; i < 8; i++) {
-      this.cachedStats[i] = {
-        pp: 1337,
-        rank: 13,
-        countryRank: 13,
-        totalScore: 13,
-        totalRankedScore: 1,
-        playCount: 1,
-        accuracy: 1,
-        gameMode: i > 3 ? i - 4 : i
-      };
-    }
   }
 
   get friends() {
@@ -49,16 +37,36 @@ class User extends Model {
   }
 
   CacheStats(gamemode = 0) {
+    this.GetStats(gamemode);
+  }
+
+  GetStats(gamemode = 0) {
+    let stats = this.statsM(gamemode);
+
     this.cachedStats[gamemode] = {
-      pp: 1337,
-      rank: 13,
-      countryRank: 13,
-      totalScore: 13,
-      totalRankedScore: 1,
-      playCount: 1,
-      accuracy: 1,
+      pp: stats.pp,
+      rank: stats.ranking,
+      totalScore: stats.score,
+      totalRankedScore: stats.rankedScore,
+      playCount: stats.playCount,
+      accuracy: stats.accuracy / 100,
       gameMode: gamemode > 3 ? gamemode - 4 : gamemode
     };
+  }
+
+  statsM(gamemode = 0) {
+    let eek = UserStats.where([
+      ["userID", this.id],
+      ["gameMode", gamemode]
+    ])[0];
+
+    if(eek == null) {
+      eek = new UserStats();
+      eek.userID = this.id;
+      eek.gameMode = gamemode;
+    }
+
+    return eek;
   }
 
   get timezone() {

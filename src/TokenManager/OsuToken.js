@@ -43,6 +43,11 @@ class OsuToken extends Token {
   }
 
   get stats() {
+    if(this.user.cachedStats[this.gameMode < 8 ? this.gameMode : 0] == null) {
+      for(var i = 0; i < 8; i++) {
+        this.user.GetStats(i);
+      }
+    }
     return this.user.cachedStats[this.gameMode < 8 ? this.gameMode : 0] != null ? this.user.cachedStats[this.gameMode < 8 ? this.gameMode : 0] : {
       pp: 0,
       rank: 0,

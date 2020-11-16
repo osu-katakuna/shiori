@@ -21,7 +21,7 @@ class Status {
     this.hash = "";
     this.text = "";
     this.mods = 0;
-		this.gameMode = 0;
+	this.gameMode = 0;
   }
 }
 

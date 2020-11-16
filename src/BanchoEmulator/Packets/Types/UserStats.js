@@ -14,7 +14,7 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.String,
-      value: user.relaxMode ? (user.status.text ? user.status.text + " on Relax" : "on Relax") : user.status.text
+      value: user.relaxMode != null && user.relaxMode ? (user.status.text ? user.status.text + " on Relax" : "on Relax") : user.status.text
     },
     {
       type: PacketGenerator.Type.String,
