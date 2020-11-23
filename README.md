@@ -1,5 +1,5 @@
 # shiori!
-osu! game server emulator. This is an rewritten version of katakuna! that offers an faster, stabler and extensible experience while using it.
+osu! game server emulator. This is an rewritten version of katakuna! that offers a faster, stabler and extensible experience while using it.
 
 ### Installation
 
