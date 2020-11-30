@@ -47,14 +47,21 @@ module.exports = ({req, res, token}) => {
     if(!user.restricted)
       TokenManager.DistributeNewPanel(user);
 
+    if(user.restricted) {
+      TokenManager.RestrictUser(user.id);
+    }
+
     TokenManager.AllOnlineUsers().forEach(u => {
       if(u.id == user.id || u.restricted) return; // we don't need our panel or restricted players panels. we need online & clean players ok?
       user.Token.NotifyUserPanel(u);
     });
 
-    user.Token.NotifyFriends(user.friends.map(m => m.friend));
+    if(!user.restricted)
+      user.Token.NotifyFriends(user.friends.map(m => m.friend));
 
     ChannelManager.JoinChannel("#osu", user);
+
+    if(user.restricted && user.Token.SupporterTag != null) user.Token.SupporterTag();
 
     ExecuteHook("onUserAuthenticated", user);
   }

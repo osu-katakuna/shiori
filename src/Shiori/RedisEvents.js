@@ -18,7 +18,7 @@ function Initialize() {
   RedisSubsystem.SubscribeToChannel("shiori:restrict", function(userID) {
     Logger.Info(`REDIS: Received command to restrict user id ${userID} on here.`);
     if((t = TokenManager.FindTokenUserID(userID)) != null)
-      t.user.Restrict();
+      t.user.Restrict(null, null, true);
   });
 
   RedisSubsystem.SubscribeToChannel("shiori:unmute", function(userID) {

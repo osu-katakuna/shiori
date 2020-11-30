@@ -3,6 +3,7 @@ const CountryList = require('../BanchoEmulator/Constants/Country');
 const TokenManager = require("../TokenManager");
 const UserFriend = require("./UserFriend");
 const UserStats = require("./UserStats");
+const UserRestriction = require("./UserRestriction");
 
 class User extends Model {
   constructor() {
@@ -18,6 +19,14 @@ class User extends Model {
 
   get friends() {
     return this.hasMany(UserFriend, "id", "user");
+  }
+
+  get restrictions() {
+    return this.hasMany(UserRestriction, "id", "user");
+  }
+
+  get restricted() {
+    return this.restrictions.filter(x => !x.pardoned).length > 0;
   }
 
   set status(v) {
@@ -100,7 +109,7 @@ class User extends Model {
     TokenManager.KickUser(this.id, reason, closeClient);
   }
 
-  Ban(reason = "no reason provided") {
+  Ban(reason = "no reason provided", time = -1) {
     this.abortLogin = true;
     TokenManager.BanUser(this.id, reason);
   }
@@ -113,8 +122,19 @@ class User extends Model {
     TokenManager.UnmuteUser(this.id);
   }
 
-  Restrict() {
+  Restrict(reason = "no reason provided", time = -1, dontSave = false) {
     TokenManager.RestrictUser(this.id);
+
+    if(!dontSave) {
+      let r = new UserRestriction();
+
+      r.user = this.id;
+      r.reason = reason;
+      r.permanent = time < 0;
+      if(time > 0) r.end = new Date(new Date().getTime() + (time * 1000));
+
+      r.save();
+    }
   }
 
   CloseClient() {
