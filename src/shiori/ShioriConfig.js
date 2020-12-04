@@ -10,15 +10,15 @@ const shioriDefaultConfiguration = {
   },
   database: {
     subsystem: "mysql",
-    host: "localhost",
-    port: 3306,
-    username: "katakuna",
-    password: "katakuna",
-    database: "katakuna"
+    host: process.env.DB_HOST || "localhost",
+    port: process.env.DB_PORT || 3306,
+    username: process.env.DB_USER || "katakuna",
+    password: process.env.DB_PASSWORD || "katakuna",
+    database: process.env.DB_DATABASE || "katakuna"
   },
   redis: {
     enabled: true,
-    host: "localhost",
+    host: process.env.REDIS_HOST || "localhost",
     port: 6379,
     password: null
   }
