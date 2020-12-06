@@ -3,12 +3,14 @@ var BanchoEmulator = require("../BanchoEmulator");
 var fs = require('fs');
 var path = require('path');
 
+function noop() {}
+
 function RegisterRoute(cb) {
   if(!cb) throw new Exception("an callback should be provided.");
   cb(GlobalRouter);
 }
 
-function StartServer(callback = (() => {})) {
+function StartServer(callback = noop) {
   var app = require('express')();
   const Config = require("../Shiori/ShioriConfig");
 
