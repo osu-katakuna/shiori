@@ -52,7 +52,7 @@ function CalculateOffset(data, template) {
       x.template.forEach(template => {
         for(var i = 0; i < x.length; i++) {
           if(template.condition != undefined) {
-            offset += template.condition(Parse(NewData, template).data, obj, i) == false ? Parse(NewData, template).offset : 1;
+            offset += template.condition(Parse(NewData, template).data, null, i) == false ? Parse(NewData, template).offset : 1;
           } else {
             offset += Parse(NewData, template).offset;
           }
@@ -64,7 +64,7 @@ function CalculateOffset(data, template) {
     if(x.condition == undefined) {
       offset += Parse(NewData, x).offset;
     } else {
-      offset += x.condition(Parse(NewData, x).data, obj) == true ? Parse(NewData, x).offset : 0;
+      offset += x.condition(Parse(NewData, x).data, null) == true ? Parse(NewData, x).offset : 0;
     }
   });
 

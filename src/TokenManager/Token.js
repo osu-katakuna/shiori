@@ -1,6 +1,7 @@
 const Logger = require('../logging');
 const ChannelManager = require('../ChannelManager');
 const Status = require("../Models/Status").Status;
+const Packets = require('../BanchoEmulator/Packets');
 
 class Token {
   constructor(user, token) {
@@ -110,13 +111,6 @@ class Token {
 
   Unmute() {
     this.Mute("Unmute", -this.mutedTime);
-  }
-
-  listAccesibleChannels() {
-    ChannelManager.GetAllChannels(this.user).forEach(c => {
-      this.enqueue(Packets.ChannelInfo(c));
-      if(c.autoJoin) this.enqueue(Packets.AutojoinChannel(c));
-    });
   }
 
   ChannelChange(channel) {

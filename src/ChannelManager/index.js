@@ -155,13 +155,13 @@ function RegisterMultiplayerChannel(match) {
 
 function DestroyMultiplayerChannel(match) {
   Logger.Info(`CHANNEL MANAGER: Destroyed Multiplayer channel of match #${match.id}`);
-  RegisteredChannels = RegisteredChannels.filter(c => c instanceof SpectatorChannel && c.spectatedPlayer !== who);
+  RegisteredChannels = RegisteredChannels.filter(c => c instanceof MultiplayerChannel && c.match.id == match.id);
 }
 
 function JoinChannel(channel, who) {
   const TokenManager = require("../TokenManager");
 
-  channel[0] != "#" && (to = `#${channel}`);
+  channel[0] != "#" && (channel = `#${channel}`);
 
   if(channel == "#spectator" && who.spectatedUser != null) {
     TokenManager.InformChannelChange(channel);
@@ -216,7 +216,7 @@ function LeaveChannel(channel, who) {
   var ch = GetChannel(channel);
 
   if(ch == null) {
-    Logger.Failure(`CHANNEL MANAGER: ${who.name} tried to leave an inexistent channel(WTF?): ${to}`);
+    Logger.Failure(`CHANNEL MANAGER: ${who.name} tried to leave an inexistent channel(WTF?): ${channel}`);
     return;
   }
 

@@ -14,15 +14,15 @@ class DatabaseSubsystem {
   }
 
   Connect() {
-    throw new Exception("not implemented");
+    throw new Error("not implemented");
   }
 
   Query(q, ...values) {
-    throw new Exception("not implemented");
+    throw new Error("not implemented");
   }
 
   Close() {
-    throw new Exception("not implemented");
+    throw new Error("not implemented");
   }
 }
 

@@ -5,7 +5,9 @@ const Status = require('../../Models/Status').Status;
 var CallHook = require("../../PluginManager").CallHook;
 
 module.exports = ({req, res, token, data}) => {
-  if((t = TokenManager.GetToken(token)) == null) return;
+  if((t = TokenManager.GetToken(token)) == null) {
+    return;
+  }
   
   const m = Parse(data);
 

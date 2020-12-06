@@ -227,7 +227,7 @@ class OsuToken extends Token {
   }
 
   NotifySpectatorNoMap(user) {
-    this.mySpectators.filter(spectator => spectator.user === user).forEach(s => s.hasMap = false);
+    this.mySpectators.filter(spectator => spectator.user === user).forEach(s => { s.hasMap = false; });
     this.enqueue(Packets.SpectatorNoBeatmap(user));
     this.mySpectators.filter(spectator => spectator.user.id != user.id).forEach(u => u.user.Token.enqueue(Packets.SpectatorNoBeatmap(user)));
   }

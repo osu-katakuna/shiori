@@ -6,7 +6,7 @@ var path = require('path');
 function noop() {}
 
 function RegisterRoute(cb) {
-  if(!cb) throw new Exception("an callback should be provided.");
+  if(!cb) throw new Error("an callback should be provided.");
   cb(GlobalRouter);
 }
 
