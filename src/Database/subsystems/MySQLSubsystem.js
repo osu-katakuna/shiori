@@ -2,10 +2,6 @@ const DatabaseSubsystem = require('../DatabaseSubsystem');
 const MySQL = require('sync-mysql');
 
 class MySQLSubsystem extends DatabaseSubsystem {
-  constructor() {
-    super();
-  }
-
   Connect() {
     if(this.Connected) return;
     this.connectionInstance = new MySQL({
