@@ -121,7 +121,7 @@ class OsuToken extends Token {
 
   ChannelChange(channel) {
     if(channel == "#spectator") {
-      let c = ChannelManager.GetSpectatorChannelFor(this.user);
+      const c = ChannelManager.GetSpectatorChannelFor(this.user);
 
       if(c != null)
         this.enqueue(Packets.ChannelInfo(c));
@@ -130,10 +130,10 @@ class OsuToken extends Token {
     }
 
     if(channel == "#multiplayer") {
-      let match = MultiplayerManager.GetMatchID(this.matchID);
+      const match = MultiplayerManager.GetMatchID(this.matchID);
       if(match == null) return;
 
-      let c = ChannelManager.GetMultiplayerChannelFor(match);
+      const c = ChannelManager.GetMultiplayerChannelFor(match);
 
       if(c != null)
         this.enqueue(Packets.ChannelInfo(c));

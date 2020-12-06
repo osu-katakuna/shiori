@@ -69,7 +69,7 @@ class Model {
   }
 
   save() {
-    let columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME);
+    const columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME);
 
     if(this.update) {
       let val = "";
@@ -99,7 +99,7 @@ class Model {
   }
 
   delete() {
-    let columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME);
+    const columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME);
 
     let conditions = "";
 

@@ -71,7 +71,7 @@ class Channel {
 
   SendMessage(from, message) {
     if(this.messageCache.length + 1 > MAXIMUM_CACHE_LENGTH) this.messageCache = this.messageCache.slice(1); // remove first message make sure to keep max objects son
-    let md = {
+    const md = {
       from,
       message,
       id: this._mid++,
@@ -227,8 +227,8 @@ function SendMessage(to, by, message) {
   if(to[0] != "#") return;
 
   if(to == "#spectator") {
-    let ch = by.Token.spectatedUser == null ? GetSpectatorChannelFor(by) : GetSpectatorChannelFor(by.Token.spectatedUser);
-    let name = by.Token.spectatedUser == null ? by.name : by.Token.spectatedUser.name;
+    const ch = by.Token.spectatedUser == null ? GetSpectatorChannelFor(by) : GetSpectatorChannelFor(by.Token.spectatedUser);
+    const name = by.Token.spectatedUser == null ? by.name : by.Token.spectatedUser.name;
 
     if(ch != null) {
       Logger.Info(`CHANNEL MANAGER: ${by.name} => SPECTATOR(${name}): ${message}`);
@@ -241,7 +241,7 @@ function SendMessage(to, by, message) {
   }
 
   if(to == "#multiplayer") {
-    let ch = RegisteredChannels.filter(i => i instanceof MultiplayerChannel && i.match.id == by.Token.matchID)[0];
+    const ch = RegisteredChannels.filter(i => i instanceof MultiplayerChannel && i.match.id == by.Token.matchID)[0];
 
     if(ch != null) {
       Logger.Info(`CHANNEL MANAGER: ${by.name} => MULTIPLAYER(MP#${ch.match.id}): ${message}`);

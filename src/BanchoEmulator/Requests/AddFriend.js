@@ -4,9 +4,9 @@ var ExecuteHook = require("../../PluginManager").CallHook;
 
 module.exports = ({req, res, token, data}) => {
   if((t = TokenManager.GetToken(token)) != null) {
-    let friendID = data.readInt32LE();
+    const friendID = data.readInt32LE();
 
-    let f = new UserFriend();
+    const f = new UserFriend();
     f.user = t.user.id;
     f.friend = friendID;
 

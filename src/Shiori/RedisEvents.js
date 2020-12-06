@@ -37,11 +37,11 @@ function Initialize() {
 
 
   RedisSubsystem.SubscribeToChannel("shiori:kick", function(d) {
-    let obj = JSON.parse(d);
+    const obj = JSON.parse(d);
 
     if(obj.userID == null) return;
 
-    let reason = obj.reason ? obj.reason : "no reason provided";
+    const reason = obj.reason ? obj.reason : "no reason provided";
 
     Logger.Info(`REDIS: Received command to kick user id ${obj.userID} for the following reason: ${reason}.`);
 
@@ -50,11 +50,11 @@ function Initialize() {
   });
 
   RedisSubsystem.SubscribeToChannel("shiori:mute", function(d) {
-    let obj = JSON.parse(d);
+    const obj = JSON.parse(d);
 
     if(obj.userID == null || obj.time == null) return;
 
-    let reason = obj.reason ? obj.reason : "no reason provided";
+    const reason = obj.reason ? obj.reason : "no reason provided";
 
     Logger.Info(`REDIS: Received command to mute user id ${obj.userID} for ${obj.time}s for the following reason: ${reason}.`);
 
@@ -63,7 +63,7 @@ function Initialize() {
   });
 
   RedisSubsystem.SubscribeToChannel("shiori:message", function(d) {
-    let obj = JSON.parse(d);
+    const obj = JSON.parse(d);
 
     if(obj.channel == null || obj.userID == null || obj.message == null) return;
 

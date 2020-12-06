@@ -3,9 +3,9 @@ var UserFriend = require("../../Models/UserFriend");
 
 module.exports = ({req, res, token, data}) => {
   if((t = TokenManager.GetToken(token)) != null) {
-    let friendID = data.readInt32LE();
+    const friendID = data.readInt32LE();
 
-    let f = UserFriend.where([
+    const f = UserFriend.where([
       ["user", t.user.id]
     ]);
 
