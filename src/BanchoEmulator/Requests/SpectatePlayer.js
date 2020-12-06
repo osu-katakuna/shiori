@@ -6,7 +6,8 @@ module.exports = ({req, res, token, data}) => {
     const spectatedID = data.readInt32LE();
 
     // actually make sure the player is on
-    if((p = TokenManager.FindTokenUserID(spectatedID)) != null)
+    if((p = TokenManager.FindTokenUserID(spectatedID)) != null) {
       t.Spectate(p.user);
+    }
   }
 };

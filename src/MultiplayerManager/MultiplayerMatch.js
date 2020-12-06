@@ -121,9 +121,9 @@ class MultiplayerMatch {
     const HalfTimeMod = 1 << 8;
     const NightcoreMod = 1 << 9;
 
-    if(mods & DoubleTimeMod) mods ^= DoubleTimeMod;
-    if(mods & HalfTimeMod) mods ^= HalfTimeMod;
-    if(mods & NightcoreMod) mods ^= NightcoreMod;
+    mods & DoubleTimeMod && (mods ^= DoubleTimeMod);
+    mods & HalfTimeMod && (mods ^= HalfTimeMod);
+    mods & NightcoreMod && (mods ^= NightcoreMod);
 
     // good
 
@@ -173,8 +173,7 @@ class MultiplayerMatch {
 
       this.update();
       this.slots.forEach(slot => {
-        if(slot.status & 124)
-          slot.player.NotifyMPMatchStarting(this)
+        slot.status & 124 && slot.player.NotifyMPMatchStarting(this);
       });
     }
   }
