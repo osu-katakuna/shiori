@@ -45,7 +45,7 @@ class ConfigManager {
 
   Save() {
     const c = {};
-    this.configEntries.forEach(x => c[x.name] = x.value);
+    this.configEntries.forEach(x => { c[x.name] = x.value; });
     fs.writeFileSync(this.configFile, JSON.stringify(c, null, 2))
   }
 }

@@ -59,7 +59,7 @@ function CallHook(hook, ...args) {
   f.forEach(x => {
     Logger.Info(`Calling hook '${hook}' of '${x.by.name}'(${x.by.mainFile})...`);
     var i = HookInstance(x.by);
-    i.Invalidate = () => overriden = true;
+    i.Invalidate = () => { overriden = true; };
     x.hook.call(i, ...args);
     if(i.ConfigManager) i.ConfigManager.Save();
   });
