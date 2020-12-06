@@ -16,20 +16,23 @@ const Type = {
 };
 
 function TypeSizeCalculator(type, data) {
-  if(type == Type.String)
+  if(type == Type.String) {
     return PackString(data).length;
-  else if(type == Type.Byte)
+  } else if(type == Type.Byte) {
     return 1;
-  else if(type == Type.Raw)
+  } else if(type == Type.Raw) {
     return data.length;
-  else if(type == Type.Int32 || type == Type.UInt32)
+  } else if(type == Type.Int32 || type == Type.UInt32) {
     return 4;
-  else if(type == Type.Int16 || type == Type.UInt16)
+  } else if(type == Type.Int16 || type == Type.UInt16) {
     return 2;
-  else if(type == Type.Float)
+  } else if(type == Type.Float) {
     return 4;
-  else if(type == Type.Int64 || type == Type.UInt64)
+  } else if(type == Type.Int64 || type == Type.UInt64) {
     return 8;
+  }
+  
+  return 0;
 }
 
 module.exports = {

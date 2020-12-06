@@ -51,19 +51,21 @@ function CalculateOffset(data, template) {
     if(x.type === Type.ArrayOfValues) {
       x.template.forEach(template => {
         for(var i = 0; i < x.length; i++) {
-          if(template.condition != undefined)
+          if(template.condition != undefined) {
             offset += template.condition(Parse(NewData, template).data, obj, i) == false ? Parse(NewData, template).offset : 1;
-          else
+          } else {
             offset += Parse(NewData, template).offset;
+          }
         }
       });
       return;
     }
 
-    if(x.condition == undefined)
+    if(x.condition == undefined) {
       offset += Parse(NewData, x).offset;
-    else
+    } else {
       offset += x.condition(Parse(NewData, x).data, obj) == true ? Parse(NewData, x).offset : 0;
+    }
   });
 
   return offset;
@@ -78,11 +80,9 @@ function ParseDataFromTemplate(data, template) {
 
     if(x.type === Type.ArrayOfValues) {
       x.template.forEach(template => {
-        if(!obj[x.parameter])
-          obj[x.parameter] = [];
+        !obj[x.parameter] && (obj[x.parameter] = []);
         for(var i = 0; i < x.length; i++) {
-          if(!obj[x.parameter][i])
-            obj[x.parameter][i] = {} ; // create empty object
+          !obj[x.parameter][i] && (obj[x.parameter][i] = {}); // create empty object
           if(template.condition != undefined) {
             obj[x.parameter][i][template.parameter] = template.condition(Parse(NewData, template).data, obj, i) == false ? Parse(NewData, template).data : null; // run condition then evaluate the contents.
             offset += template.condition(Parse(NewData, template).data, obj, i) == false ? Parse(NewData, template).offset : 1;

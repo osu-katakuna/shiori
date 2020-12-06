@@ -1,7 +1,8 @@
-var TokenManager = require("../../TokenManager");
-var MultiplayerManager = require("../../MultiplayerManager");
+const TokenManager = require("../../TokenManager");
+const MultiplayerManager = require("../../MultiplayerManager");
 
 module.exports = ({token, data}) => {
-  if((t = TokenManager.GetToken(token)) != null)
+  if((t = TokenManager.GetToken(token)) != null) {
     MultiplayerManager.JoinLobby(t);
+  }
 };

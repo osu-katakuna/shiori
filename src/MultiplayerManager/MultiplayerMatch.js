@@ -40,7 +40,9 @@ class MultiplayerSlot {
 
 class MultiplayerMatchResult {
   constructor(match = null, results = []) {
-    if(!(match instanceof MultiplayerMatch)) throw new Error("match must be an instance of MultiplayerMatch"); // these stupid checks are required!! we don't want misuses please!
+    if(!(match instanceof MultiplayerMatch)) {
+      throw new Error("match must be an instance of MultiplayerMatch"); // these stupid checks are required!! we don't want misuses please!
+    }
     this.match = match;
     this.results = results;
   }
@@ -48,7 +50,9 @@ class MultiplayerMatchResult {
 
 class MultiplayerMatch {
   constructor(name, host, password = null, maxPlayers = 8, publicHistory = false) {
-    if(!(host instanceof Token)) throw new Error("host must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(host instanceof Token)) {
+      throw new Error("host must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     this.id = 0;
 
@@ -81,7 +85,9 @@ class MultiplayerMatch {
   }
 
   join(player) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     const allocatedSlot = this.slots.filter(s => s.status == MultiplayerSlotStatus.Free)[0];
     if(allocatedSlot == null) {
@@ -100,10 +106,12 @@ class MultiplayerMatch {
   }
 
   setMods(player, mods) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     if(!this.freeMod) {
-      if(player === this.host) this.mods = mods;
+      player === this.host && (this.mods = mods);
       return;
     }
 
@@ -128,7 +136,9 @@ class MultiplayerMatch {
   }
 
   setPlayerReadyState(player, ready = false) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
     const players = this.slots.filter(slot => slot.player === player);
 
     if(players.length == 1) {
@@ -138,7 +148,9 @@ class MultiplayerMatch {
   }
 
   setPlayerMissingMap(player, missing = true) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
     const players = this.slots.filter(slot => slot.player === player);
 
     if(players.length == 1) {
@@ -168,31 +180,34 @@ class MultiplayerMatch {
   }
 
   skip(player) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     // set our skip state
     const allPlayers = this.slots.filter(slot => slot.player === player);
 
-    if(allPlayers.length == 1) allPlayers[0].requestedSkip = true;
+    allPlayers.length == 1 && (allPlayers[0].requestedSkip = true);
 
     const players = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing);
     const skippedPlayers = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing && slot.requestedSkip);
 
-    if(skippedPlayers.length == players.length)
-      skippedPlayers.forEach(slot => slot.player.NotifyMPSkip());
+    skippedPlayers.length == players.length && skippedPlayers.forEach(slot => slot.player.NotifyMPSkip());
 
     this.update();
   }
 
   finished(player) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     const RunEvent = require('../PluginManager').CallHook;
 
     // set our finish state
     const allPlayers = this.slots.filter(slot => slot.player === player);
 
-    if(allPlayers.length == 1) allPlayers[0].finished = true;
+    allPlayers.length == 1 && (allPlayers[0].finished = true);
 
     const players = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing);
     const finishedPlayers = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing && slot.finished);
@@ -214,7 +229,9 @@ class MultiplayerMatch {
   }
 
   playerScoreUpdate(player, score) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
     const players = this.slots.filter(slot => slot.player === player);
 
     if(players.length == 1) {
@@ -226,7 +243,9 @@ class MultiplayerMatch {
   }
 
   playerFailed(player) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
     const players = this.slots.filter(slot => slot.player === player);
 
     if(players.length == 1) {
@@ -240,7 +259,9 @@ class MultiplayerMatch {
     const players = this.slots.filter(slot => slot.player === player);
 
     // check if the new slot number is between 0 and 16
-    if(newSlot < 0 || newSlot > 16) return;
+    if(newSlot < 0 || newSlot > 16) {
+      return;
+    }
 
     if(players.length == 1) {
       // check if the slot is occupied
@@ -266,7 +287,9 @@ class MultiplayerMatch {
 
   toggleSlotLock(slot) {
     // check if the new slot number is between 0 and 16
-    if(slot < 0 || slot > 16) return;
+    if(slot < 0 || slot > 16) {
+      return;
+    }
 
     const selectedSlot = this.getSlot(slot);
 
@@ -290,12 +313,14 @@ class MultiplayerMatch {
   }
 
   playerMapLoaded(player) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     // set our loaded state
     const allPlayers = this.slots.filter(slot => slot.player === player);
 
-    if(allPlayers.length == 1) allPlayers[0].loadedMap = true;
+    allPlayers.length == 1 && (allPlayers[0].loadedMap = true);
 
     const players = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing);
     const readyPlayers = this.slots.filter(slot => slot.status == MultiplayerSlotStatus.Playing && slot.loadedMap);
@@ -309,7 +334,9 @@ class MultiplayerMatch {
   }
 
   playerToggleTeam(player) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
     const players = this.slots.filter(slot => slot.player === player);
 
     if(players.length == 1) {
@@ -319,7 +346,9 @@ class MultiplayerMatch {
   }
 
   setHost(newHost) {
-    if(!(newHost instanceof Token)) throw new Error("newHost must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(newHost instanceof Token)) {
+      throw new Error("newHost must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     this.host = newHost;
     newHost.NotifyMPHost();
@@ -328,11 +357,15 @@ class MultiplayerMatch {
   }
 
   leave(player) {
-    if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    if(!(player instanceof Token)) {
+      throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
+    }
 
     const players = this.slots.filter(slot => slot.player === player);
 
-    if(players.length == 0) return;
+    if(players.length == 0) {
+      return;
+    }
 
     players[0].player = null;
     players[0].status = MultiplayerSlotStatus.Free;
@@ -358,14 +391,20 @@ class MultiplayerMatch {
     const MultiplayerManager = require('./index');
     const RunEvent = require('../PluginManager').CallHook;
 
-    this.slots.forEach(slot => { if(slot.status & 124) slot.player.NotifyMPLobby(this); });
+    this.slots.forEach(slot => { slot.status & 124 && slot.player.NotifyMPLobby(this); });
     MultiplayerManager.MatchUpdate(this);
     RunEvent("onMPMatchUpdate", this);
   }
 
   getSlot(slot) {
-    if(slot > 16) return null;
-    if(this.slots.filter(s => s.slot == slot).length >= 1) return this.slots.filter(s => s.slot == slot)[0];
+    if(slot > 16) {
+      return null;
+    }
+
+    if(this.slots.filter(s => s.slot == slot).length >= 1) {
+      return this.slots.filter(s => s.slot == slot)[0];
+    }
+    
     return null;
   }
 }

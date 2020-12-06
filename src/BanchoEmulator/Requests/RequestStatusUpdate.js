@@ -6,8 +6,7 @@ module.exports = ({req, res, token, data}) => {
     t.user.CacheStats();
 
     // if the rank did not change, just send it to the owning client. it's not required to distribute it.
-    if(t.stats.rank == oldRank)
-      t.NotifyUserStats(t.user);
+    t.stats.rank == oldRank && t.NotifyUserStats(t.user);
 
     // SEND TO SPECTATORS! TO DO!!
     TokenManager.DistributeNewStats(t.user);

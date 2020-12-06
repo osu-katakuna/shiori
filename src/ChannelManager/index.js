@@ -70,7 +70,9 @@ class Channel {
   }
 
   SendMessage(from, message) {
-    if(this.messageCache.length + 1 > MAXIMUM_CACHE_LENGTH) this.messageCache = this.messageCache.slice(1); // remove first message make sure to keep max objects son
+    if(this.messageCache.length + 1 > MAXIMUM_CACHE_LENGTH) {
+      this.messageCache = this.messageCache.slice(1); // remove first message make sure to keep max objects son
+    }
     const md = {
       from,
       message,
@@ -82,7 +84,9 @@ class Channel {
   }
 
   Join(who) {
-    if(this._members.includes(who.id)) return; // check if the ID isn't joined already...
+    if(this._members.includes(who.id)) { // check if the ID isn't joined already...
+      return;
+    }
     this._members.push(who.id);
   }
 
@@ -157,7 +161,7 @@ function DestroyMultiplayerChannel(match) {
 function JoinChannel(channel, who) {
   const TokenManager = require("../TokenManager");
 
-  if(channel[0] != "#") to = `#${channel}`;
+  channel[0] != "#" && (to = `#${channel}`);
 
   if(channel == "#spectator" && who.spectatedUser != null) {
     TokenManager.InformChannelChange(channel);
@@ -195,7 +199,9 @@ function JoinChannel(channel, who) {
 function LeaveChannel(channel, who) {
   const TokenManager = require("../TokenManager");
 
-  if(channel[0] != "#") return;
+  if(channel[0] != "#") {
+    return;
+  }
 
   if(channel == "#spectator") {
     TokenManager.InformChannelChange(channel);
@@ -224,7 +230,9 @@ function SendMessage(to, by, message) {
   const TokenManager = require("../TokenManager");
   const PluginManager = require("../PluginManager");
 
-  if(to[0] != "#") return;
+  if(to[0] != "#") {
+    return;
+  }
 
   if(to == "#spectator") {
     const ch = by.Token.spectatedUser == null ? GetSpectatorChannelFor(by) : GetSpectatorChannelFor(by.Token.spectatedUser);
@@ -232,8 +240,9 @@ function SendMessage(to, by, message) {
 
     if(ch != null) {
       Logger.Info(`CHANNEL MANAGER: ${by.name} => SPECTATOR(${name}): ${message}`);
-      if(!PluginManager.CallHook("onPublicMessage", ch, by, message))
+      if(!PluginManager.CallHook("onPublicMessage", ch, by, message)) {
         ch.SendMessage(by, message);
+      }
       else Logger.Info(`CHANNEL MANAGER: A plugin managed the message. The message will be not sent over.`);
 
       return;
@@ -245,8 +254,9 @@ function SendMessage(to, by, message) {
 
     if(ch != null) {
       Logger.Info(`CHANNEL MANAGER: ${by.name} => MULTIPLAYER(MP#${ch.match.id}): ${message}`);
-      if(!PluginManager.CallHook("onPublicMessage", ch, by, message))
+      if(!PluginManager.CallHook("onPublicMessage", ch, by, message)) {
         ch.SendMessage(by, message);
+      }
       else Logger.Info(`CHANNEL MANAGER: A plugin managed the message. The message will be not sent over.`);
 
       return;
@@ -266,20 +276,25 @@ function SendMessage(to, by, message) {
   }
 
   Logger.Info(`CHANNEL MANAGER: ${by.name} => ${to}: ${message}`);
-  if(!PluginManager.CallHook("onPublicMessage", ch, by, message))
+  if(!PluginManager.CallHook("onPublicMessage", ch, by, message)) {
     ch.SendMessage(by, message);
+  }
   else Logger.Info(`CHANNEL MANAGER: A plugin managed the message. The message will be not sent over.`);
 }
 
 function GetAllChannels(who = null) {
   return RegisteredChannels.map(c => {
-    if(c.type == ChannelType.RESERVED_CHANNEL || (c.type == ChannelType.PROTECTED_CHANNEL && c.permissionRequired != null && who != null && !who.hasPermission(c.permissionRequired))) return;
+    if(c.type == ChannelType.RESERVED_CHANNEL || (c.type == ChannelType.PROTECTED_CHANNEL && c.permissionRequired != null && who != null && !who.hasPermission(c.permissionRequired))) {
+      return;
+    }
     return c;
   }).filter(x => x != undefined);
 }
 
 function GetJoinedChannelsOfUser(who = null) {
-  if(who == null) return;
+  if(who == null) { 
+    return;
+  }
 
   return RegisteredChannels.filter(x => x.members.filter(m => m != null && m.id == who.id).length > 0);
 }
@@ -292,7 +307,7 @@ function RegisterChannels() {
     newC.name = c.name[0] != "#" ? `#${c.name}` : c.name;
     newC.description = c.description;
     newC.autoJoin = c.autojoin;
-    if(newC.type == ChannelType.PROTECTED_CHANNEL) newC.permissionRequired = c.permissionRequired;
+    newC.type == ChannelType.PROTECTED_CHANNEL && (newC.permissionRequired = c.permissionRequired);
 
     RegisteredChannels.push(newC);
     Logger.Info(`CHANNEL MANAGER: Registered channel ${newC.name}, type ${newC.type}`);

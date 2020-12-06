@@ -16,26 +16,27 @@ function BuildPacket(__packet) {
   packet.writeInt32LE(data_size, 3); // data_size
 
   __packet.data.forEach((p) => {
-    if(p.type == Type.String)
+    if(p.type == Type.String) {
       PackString(p.value).copy(packet, offset);
-    else if(p.type == Type.Byte)
+    } else if(p.type == Type.Byte) {
       packet[offset] = p.value;
-    else if(p.type == Type.Int32)
+    } else if(p.type == Type.Int32) {
       packet.writeInt32LE(p.value, offset);
-    else if(p.type == Type.UInt32)
+    } else if(p.type == Type.UInt32) {
       packet.writeUInt32LE(p.value, offset);
-    else if(p.type == Type.Int16)
+    } else if(p.type == Type.Int16) {
       packet.writeInt16LE(p.value, offset);
-    else if(p.type == Type.UInt16)
+    } else if(p.type == Type.UInt16) {
       packet.writeUInt16LE(p.value, offset);
-    else if(p.type == Type.Float)
+    } else if(p.type == Type.Float) {
       packet.writeFloatLE(p.value, offset);
-    else if(p.type == Type.Int64)
+    } else if(p.type == Type.Int64) {
       new Int64(p.value).toBuffer().copy(packet, offset);
-    else if(p.type == Type.UInt64)
+    } else if(p.type == Type.UInt64) {
       new UInt64(p.value).toBuffer().copy(packet, offset);
-    else if(p.type == Type.Raw)
+    } else if(p.type == Type.Raw) {
       new Buffer.from(p.value).copy(packet, offset);
+    }
     offset += TypeSizeCalculator(p.type, p.value)
     x++;
   });

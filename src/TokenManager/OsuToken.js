@@ -64,7 +64,7 @@ class OsuToken extends Token {
   }
 
   Message(from, where, message) {
-    if(where == null) where = this.user.name;
+    where == null && (where = this.user.name);
     this.enqueue(Packets.ChatMessage(from, where, message));
   }
 
@@ -80,12 +80,14 @@ class OsuToken extends Token {
     Logger.Failure(`${this.user.name} was kicked: ${reason}; close client: ${closeClient}`);
     this.abortLogin = true;
     this.enqueue(Packets.Notification(`You have been kicked from osu!katakuna for the following reason: ${reason}`));
-    if(closeClient) this.CloseClient();
+    closeClient && this.CloseClient();
     this.enqueue(Packets.LoginResponse(-1));
   }
 
   Restrict() {
-    if(this.restricted) return;
+    if(this.restricted) {
+      return;
+    }
     Logger.Failure(`${this.user.name} was restricted.`);
     this.Message(this.fakeBanchoBot, null, "Your account has been restricted. Please check out our [https://katakuna.cc website] for more information.");
     this.SupporterTag();
@@ -93,17 +95,19 @@ class OsuToken extends Token {
   }
 
   Ban(reason = "no reason provided") {
-    if(this.banned) return;
+    if(this.banned) {
+      return;
+    }
     Logger.Failure(`${this.user.name} was banned: ${reason}`);
     this.Message(this.fakeBanchoBot, null, "Your account has been banned from our servers. Please check out our [https://katakuna.cc website] for more information.");
-    if(!this.loginCheck) this.SupporterTag();
+    !this.loginCheck && this.SupporterTag();
     this.banned = true;
   }
 
   Mute(reason = "no reason provided", time = 0) {
     this.mutedTime += time;
     Logger.Failure(`${this.user.name} was ${this.mutedTime > 0 ? "muted for " + this.mutedTime + "s with reason: " + reason : "unmuted"}.`);
-    if(this.mutedTime > 0) this.Message(this.fakeBanchoBot, null, `You have been muted for ${this.mutedTime / 60} minutes for the following reason: ${reason}`);
+    this.mutedTime > 0 && this.Message(this.fakeBanchoBot, null, `You have been muted for ${this.mutedTime / 60} minutes for the following reason: ${reason}`);
     this.enqueue(Packets.SilenceEndTime(this.mutedTime));
   }
 
@@ -115,28 +119,26 @@ class OsuToken extends Token {
   listAccesibleChannels() {
     ChannelManager.GetAllChannels(this.user).forEach(c => {
       this.enqueue(Packets.ChannelInfo(c));
-      if(c.autoJoin) this.enqueue(Packets.AutojoinChannel(c));
+      c.autoJoin && this.enqueue(Packets.AutojoinChannel(c));
     });
   }
 
   ChannelChange(channel) {
     if(channel == "#spectator") {
       const c = ChannelManager.GetSpectatorChannelFor(this.user);
-
-      if(c != null)
-        this.enqueue(Packets.ChannelInfo(c));
-
+      c != null && this.enqueue(Packets.ChannelInfo(c));
       return;
     }
 
     if(channel == "#multiplayer") {
       const match = MultiplayerManager.GetMatchID(this.matchID);
-      if(match == null) return;
+      if(match == null) {
+        return;
+      }
 
       const c = ChannelManager.GetMultiplayerChannelFor(match);
 
-      if(c != null)
-        this.enqueue(Packets.ChannelInfo(c));
+      c != null && this.enqueue(Packets.ChannelInfo(c));
 
       return;
     }
@@ -157,7 +159,7 @@ class OsuToken extends Token {
   }
 
   sendLoginResponse() {
-    if(this.user.restricted) this.Restrict();
+    this.user.restricted && this.Restrict();
 
     if(this.user.banned) {
       this.Ban();
@@ -193,7 +195,7 @@ class OsuToken extends Token {
       this.mySpectators.forEach(s => {
         s.user.Token.enqueue(Packets.FellowSpectatorJoined(user))
         user.Token.enqueue(Packets.FellowSpectatorJoined(s.user));
-        if(!s.hasMap) user.Token.enqueue(Packets.SpectatorNoBeatmap(s.user));
+        !s.hasMap && user.Token.enqueue(Packets.SpectatorNoBeatmap(s.user));
       });
     }
 
@@ -216,13 +218,12 @@ class OsuToken extends Token {
 
   NotifySpectatorLeft(user) {
     this.mySpectators = this.mySpectators.filter(spectator => spectator.user != user);
-    if(this.mySpectators.filter(spectator => spectator.user.id == user.id).length == 0) {// make sure we prevent informing the spectated that some one left befure making sure that they TRULY stopped spectating...
+    if(this.mySpectators.filter(spectator => spectator.user.id == user.id).length == 0) { // make sure we prevent informing the spectated that some one left befure making sure that they TRULY stopped spectating...
       this.enqueue(Packets.SpectatorLeft(user));
       this.mySpectators.forEach(u => u.user.Token.enqueue(Packets.FellowSpectatorLeft(user)));
     }
     // if there are no more spectators, destroy the spectator channel allocated for us.
-    if(this.mySpectators.length == 0 && ChannelManager.GetSpectatorChannelFor(this.user) != null)
-      ChannelManager.DestroySpectatorChannel(this.user);
+    (this.mySpectators.length == 0 && ChannelManager.GetSpectatorChannelFor(this.user) != null) && ChannelManager.DestroySpectatorChannel(this.user);
   }
 
   NotifySpectatorNoMap(user) {

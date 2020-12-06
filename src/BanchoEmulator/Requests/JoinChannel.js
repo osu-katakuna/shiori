@@ -1,11 +1,12 @@
-var Logger = require('../../logging');
-var User = require('../../Models/User');
-var ExecuteHook = require("../../PluginManager").CallHook;
-var TokenManager = require("../../TokenManager");
-var ChannelManager = require("../../ChannelManager");
+const Logger = require('../../logging');
+const User = require('../../Models/User');
+const ExecuteHook = require("../../PluginManager").CallHook;
+const TokenManager = require("../../TokenManager");
+const ChannelManager = require("../../ChannelManager");
 const { ReadString } = require('../Packets/Utils');
 
 module.exports = ({req, res, token, data}) => {
-  if((t = TokenManager.GetToken(token)) != null)
+  if((t = TokenManager.GetToken(token)) != null) {
     ChannelManager.JoinChannel(ReadString(data, 0), t.user);
+  }
 };

@@ -44,24 +44,22 @@ module.exports = ({req, res, token}) => {
 
     user.Token.sendLoginResponse();
 
-    if(!user.restricted)
-      TokenManager.DistributeNewPanel(user);
+    !user.restricted && TokenManager.DistributeNewPanel(user);
 
-    if(user.restricted) {
-      TokenManager.RestrictUser(user.id);
-    }
+    user.restricted && TokenManager.RestrictUser(user.id);
 
     TokenManager.AllOnlineUsers().forEach(u => {
-      if(u.id == user.id || u.restricted) return; // we don't need our panel or restricted players panels. we need online & clean players ok?
+      if(u.id == user.id || u.restricted) {
+        return; // we don't need our panel or restricted players panels. we need online & clean players ok?
+      }
       user.Token.NotifyUserPanel(u);
     });
 
-    if(!user.restricted)
-      user.Token.NotifyFriends(user.friends.map(m => m.friend));
+    !user.restricted && user.Token.NotifyFriends(user.friends.map(m => m.friend));
 
     ChannelManager.JoinChannel("#osu", user);
 
-    if(user.restricted && user.Token.SupporterTag != null) user.Token.SupporterTag();
+    (user.restricted && user.Token.SupporterTag != null) && user.Token.SupporterTag();
 
     ExecuteHook("onUserAuthenticated", user);
   }
