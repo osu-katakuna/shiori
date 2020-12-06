@@ -13,7 +13,7 @@ class UserFriend extends Model {
 
     const User = require("./User");
     
-    let t = TokenManager.FindTokenUserID(this.user_id);
+    const t = TokenManager.FindTokenUserID(this.user_id);
     return (this.cachedFriend = t ? t.user : this.belongsTo(User, "user"));
   }
 }

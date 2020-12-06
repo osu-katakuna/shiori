@@ -15,7 +15,7 @@ module.exports = ({token, data}) => {
     };
 
     var password = parsed.password == '' || parsed.password <= 0 ? null : parsed.password;
-    let privateMatch = password != null && password.indexOf("//private") > 0;
+    const privateMatch = password != null && password.indexOf("//private") > 0;
 
     if(password != null && password.indexOf("//private") > 0) password = password.slice(0, password.indexOf("//private"));
 

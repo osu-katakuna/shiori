@@ -4,7 +4,7 @@ var Logger = require('../../logging');
 
 module.exports = ({token, data}) => {
   if((t = TokenManager.GetToken(token)) != null) {
-    let slot = data.readUInt32LE();
+    const slot = data.readUInt32LE();
     if(t.inMatch) {
       var match = MultiplayerManager.GetMatchID(t.matchID);
 

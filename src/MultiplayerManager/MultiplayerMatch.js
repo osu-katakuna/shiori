@@ -83,7 +83,7 @@ class MultiplayerMatch {
   join(player) {
     if(!(player instanceof Token)) throw new Error("player must be an instance of Token"); // these stupid checks are required!! we don't want misuses please!
 
-    let allocatedSlot = this.slots.filter(s => s.status == MultiplayerSlotStatus.Free)[0];
+    const allocatedSlot = this.slots.filter(s => s.status == MultiplayerSlotStatus.Free)[0];
     if(allocatedSlot == null) {
       player.NotifyFailJoinMP();
       return;
@@ -248,7 +248,7 @@ class MultiplayerMatch {
         return;
       }
 
-      let _slot = this.getSlot(newSlot);
+      const _slot = this.getSlot(newSlot);
 
       _slot.player = players[0].player;
       _slot.status = players[0].status;
@@ -268,12 +268,12 @@ class MultiplayerMatch {
     // check if the new slot number is between 0 and 16
     if(slot < 0 || slot > 16) return;
 
-    let selectedSlot = this.getSlot(slot);
+    const selectedSlot = this.getSlot(slot);
 
     if(selectedSlot.status & 124) {
       // kick player in that slot!
       selectedSlot.player.NotifyMPKick();
-      let kickedPlayer = selectedSlot.player;
+      const kickedPlayer = selectedSlot.player;
 
       selectedSlot.player = null;
       selectedSlot.status = MultiplayerSlotStatus.Locked;

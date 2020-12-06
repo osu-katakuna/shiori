@@ -3,7 +3,7 @@ var UserFriend = require("../../Models/UserFriend");
 
 module.exports = ({req, res, token, data}) => {
   if((t = TokenManager.GetToken(token)) != null) {
-    let spectatedID = data.readInt32LE();
+    const spectatedID = data.readInt32LE();
 
     // actually make sure the player is on
     if((p = TokenManager.FindTokenUserID(spectatedID)) != null)

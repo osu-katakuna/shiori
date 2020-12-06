@@ -50,7 +50,7 @@ class User extends Model {
   }
 
   GetStats(gamemode = 0) {
-    let stats = this.statsM(gamemode);
+    const stats = this.statsM(gamemode);
 
     this.cachedStats[gamemode] = {
       pp: stats.pp,
@@ -126,7 +126,7 @@ class User extends Model {
     TokenManager.RestrictUser(this.id);
 
     if(!dontSave) {
-      let r = new UserRestriction();
+      const r = new UserRestriction();
 
       r.user = this.id;
       r.reason = reason;

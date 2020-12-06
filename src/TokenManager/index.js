@@ -104,7 +104,7 @@ function DestroyToken(token) {
   const ChannelManager = require("../ChannelManager");
   const MultiplayerManager = require("../MultiplayerManager");
 
-  let user = t.user;
+  const user = t.user;
 
   ChannelManager.GetJoinedChannelsOfUser(user).forEach(c => c.Leave(user)); // make user leave all channels
   MultiplayerManager.LeaveLobby(t); // make user leave the lobby.
