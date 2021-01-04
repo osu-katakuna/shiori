@@ -4,6 +4,7 @@ const TokenManager = require("../TokenManager");
 const UserFriend = require("./UserFriend");
 const UserStats = require("./UserStats");
 const UserRestriction = require("./UserRestriction");
+const WebhookHandler = require("../Webhook/WebhookHandlers");
 
 class User extends Model {
   constructor() {
@@ -13,6 +14,7 @@ class User extends Model {
     this.abortLogin = false;
     this.token = null;
     this.countryCode = "";
+    this.rawCountry = "__";
 
     this.cachedStats = [];
   }
@@ -82,18 +84,19 @@ class User extends Model {
     return 0;
   }
 
-  get role() {
+  get Role() {
     return 1;
   }
 
   get country() {
-    return this.userCountry;
+    return this.rawCountry;
   }
 
   set country(c) {
     this.countryCode = c;
     if(c == "A2") this.countryCode = "Sattelite Provider";
     this.userCountry = CountryList[c] ? CountryList[c] : 0;
+    this.rawCountry = CountryList[c] ? c : '__';
   }
 
   get Token() {
@@ -134,6 +137,8 @@ class User extends Model {
       if(time > 0) r.end = new Date(new Date().getTime() + (time * 1000));
 
       r.save();
+
+      WebhookHandler.onUserRestriction(r);
     }
   }
 

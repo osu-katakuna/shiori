@@ -18,7 +18,7 @@ module.exports = (user) => PacketGenerator.BuildPacket({
     },
     {
       type: PacketGenerator.Type.Int16,
-      value: user.country
+      value: user.userCountry
     },
     {
       type: PacketGenerator.Type.Byte,

@@ -34,6 +34,11 @@ module.exports = ({req, res, token}) => {
     }
 
     Logger.Success("Login: Authentication is successful.");
+    if(!user.verified) {
+      Logger.Info(`${user.name} is a new user around here! Hi.`);
+      user.verified = true;
+      user.save();
+    }
 
     user.token = TokenManager.CreateToken(user, token); // create token
 
