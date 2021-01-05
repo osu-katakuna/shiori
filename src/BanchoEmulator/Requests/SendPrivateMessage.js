@@ -9,6 +9,7 @@ module.exports = ({ req, res, token, data }) => {
   var target = TokenManager.FindTokenUsername(m.channel);
 
   if (target == null) {
+    sender.Message(target.user, target.user.name, "The current user is offline.");
     return; // user is offline lol
   };
 
@@ -31,6 +32,6 @@ module.exports = ({ req, res, token, data }) => {
   msg.save();
 
   if (!PluginManager.CallHook("onPrivateMessage", target.user, sender.user, msg)) {
-    target.Message(sender.user, sender.user.name, message.content);
+    target.Message(sender.user, sender.user.name, msg.content);
   }
 };

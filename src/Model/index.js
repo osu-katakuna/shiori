@@ -69,7 +69,7 @@ class Model {
   }
 
   save() {
-    const columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME);
+    const columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME).filter(x => this[x] != null);
 
     if(this.update) {
       let val = "";
@@ -89,8 +89,8 @@ class Model {
 
       for(var i = 0; i < columns.length; i++) {
         if(this[columns[i]] == null) continue;
-        c += columns[i] + (i < columns.length - 1 ? ", " : "");
-        v += SQLEscape(this[columns[i]]) + (i < columns.length - 1 ? ", " : "");
+        c += columns[i] + (i < (columns.length - 1) ? ", " : "");
+        v += SQLEscape(this[columns[i]]) + (i < (columns.length - 1) ? ", " : "");
         this.oldData[columns[i]] = this[columns[i]];
       }
 
