@@ -1,12 +1,12 @@
 const Packets = require('../Packets');
 const Logger = require('../../logging');
 const uuid = require('uuid').v4;
-var User = require('../../Models/User');
+const User = require('../../Models/User');
 const LoginParser = require('../Parsers/LoginParser');
-var crypto = require('crypto');
-var ExecuteHook = require("../../PluginManager").CallHook;
-var TokenManager = require("../../TokenManager");
-var ChannelManager = require("../../ChannelManager");
+const crypto = require('crypto');
+const ExecuteHook = require("../../PluginManager").CallHook;
+const TokenManager = require("../../TokenManager");
+const ChannelManager = require("../../ChannelManager");
 
 module.exports = ({req, res, token}) => {
   var LoginParameter = LoginParser(req.body);
@@ -67,5 +67,10 @@ module.exports = ({req, res, token}) => {
     (user.restricted && user.Token.SupporterTag != null) && user.Token.SupporterTag();
 
     ExecuteHook("onUserAuthenticated", user);
+
+    // now show all unread messages
+    user.unreadMessages.forEach(msg => {
+      user.Token.Message(msg.from, msg.from.name, msg.formattedContent);
+    });
   }
 };

@@ -5,6 +5,7 @@ const UserFriend = require("./UserFriend");
 const UserStats = require("./UserStats");
 const UserRestriction = require("./UserRestriction");
 const WebhookHandler = require("../Webhook/WebhookHandlers");
+const UserPrivateMessage = require("./UserPrivateMessage");
 
 class User extends Model {
   constructor() {
@@ -45,6 +46,10 @@ class User extends Model {
 
   get relaxMode() {
     return this.Token.relaxMode;
+  }
+
+  get unreadMessages() {
+    return UserPrivateMessage.where([["to_user", this.id], ["is_read", 0]]);
   }
 
   CacheStats(gamemode = 0) {
