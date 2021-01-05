@@ -1,5 +1,4 @@
 var TokenManager = require("../../TokenManager");
-var ChannelManager = require("../../ChannelManager");
 const Parse = require('../Parsers/ChatMessageParser');
 
 module.exports = ({req, res, token, data}) => {
