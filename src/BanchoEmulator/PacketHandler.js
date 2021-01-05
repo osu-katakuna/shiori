@@ -11,6 +11,7 @@ const PacketHandlerTable = {
   17: require("./Requests/EndSpectatePlayer"),      // stop spectating
   18: require("./Requests/SpectatorFrame"),         // player sent an spectator frame
   21: require("./Requests/NoBeatmapSpectator"),     // player doesn't have the map
+  25: require("./Requests/SendPrivMessage"),        // sends private message
   29: require("./Requests/LeaveLobby"),             // leave multiplayer lobby
   30: require("./Requests/EnterLobby"),             // enter multiplayer lobby
   31: require("./Requests/CreateMultiplayerMatch"), // create multiplayer match
