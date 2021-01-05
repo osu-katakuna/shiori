@@ -1,6 +1,6 @@
 {
   "name": "shiori",
-  "version": "2.19.32",
+  "version": "2.19.33",
   "description": "shiori! is an rewritten version of the katakuna! osu! server that offers an faster, stabler and extensible experience while using it.",
   "main": "shiori.js",
   "scripts": {

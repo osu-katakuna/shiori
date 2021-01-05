@@ -1,5 +1,4 @@
-const e = require("express");
-let Config = require("./WebhookConfig");
+const Config = require("./WebhookConfig");
 const WebhookMessage = require("./WebhookMessage");
 
 function onUserRestriction(r) {
@@ -7,12 +6,12 @@ function onUserRestriction(r) {
         return;
     }
 
-    let user = r.User;
+    const user = r.User;
 
-    let msg = new WebhookMessage(Config.alertWebhook);
+    const msg = new WebhookMessage(Config.alertWebhook);
     msg.username = "shiori!";
 
-    let embed = msg.createEmbed();
+    const embed = msg.createEmbed();
 
     embed.title = "shiori! >> User Restriction";
     embed.description = "An shiori! user got restricted. lol!";
@@ -22,12 +21,12 @@ function onUserRestriction(r) {
     embed.author.url = "https://katakuna.tk/u/" + user.id;
     embed.author.icon_url = "https://a.katakuna.tk/" + user.id;
 
-    let reason = embed.addField();
+    const reason = embed.addField();
     reason.name = "Reason:";
     reason.value = r.reason;
     reason.inline = true;
 
-    let time = embed.addField();
+    const time = embed.addField();
     time.name = "Expiration time:";
     time.value = r.permanent ? '**Permanently restricted**' : new Date(r.end).toUTCString();
     time.inline = true;

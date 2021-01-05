@@ -22,7 +22,7 @@ class WebhookMessage {
     }
 
     send() {
-        let o = {};
+        const o = {};
 
         this.content != null && (o.content = this.content);
         this.username != null && (o.username = this.username);
