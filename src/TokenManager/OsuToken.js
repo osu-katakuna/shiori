@@ -19,10 +19,17 @@ class OsuToken extends Token {
 
     this.mutedTime = 0;
     this.gameMode = 0;
+    this.tokenLoginDate = Date.now();
 
     this.relax = false;
 
     this.spectatorFrameQueue = [];
+  }
+
+  Destroy() {
+    this.user.playTime = parseInt(this.user.playTime);
+    this.user.playTime += Math.ceil((Date.now() - this.tokenLoginDate) / 1000);
+    this.user.save();
   }
 
   queueSpectatorFrames() {

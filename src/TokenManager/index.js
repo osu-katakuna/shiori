@@ -111,6 +111,7 @@ function DestroyToken(token) {
   if(t.inMatch) MultiplayerManager.LeaveMatch(t, t.matchID);
 
   t.stopTimeout();
+  t.Destroy();
   tokens = tokens.filter(x => x !== t); // remove the token from the list.
 
   RedisSubsystem.Set("shiori:online_users", OnlineUsersCount()); // update count

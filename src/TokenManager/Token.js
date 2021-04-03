@@ -86,6 +86,10 @@ class Token {
     Logger.Failure(`Token Base: Not implemented - Notify(${message})`);
   }
 
+  Destroy() {
+    Logger.Failure(`Token Base: Not implemented - Destroy`);
+  }
+
   CloseClient() {
     Logger.Failure(`Token Base: Not implemented - CloseClient`);
   }
