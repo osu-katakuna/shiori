@@ -1,4 +1,5 @@
 let QueryType = require("./QueryType");
+let QueryOperand = require("./QueryOperand");
 
 class QueryBuilder {
     constructor(mainTable) {
@@ -72,7 +73,35 @@ class QueryBuilder {
         if(this.conditions == undefined) this.conditions = [];
 
         this.conditions.push({
-            type: QueryType.QUERY_WHERE,
+            type: QueryOperand.AND,
+            value: _value,
+            condition,
+            column
+        });
+
+        return this;
+    }
+
+    WhereOr(column, value = null, value2 = null) {
+        if(column instanceof Array && value == null && value2 == null) {
+            column.forEach(x => this.Where(...x));
+            return this;
+        }
+
+        let _value = "NULL";
+        let condition = "=";
+
+        if(value2 == null && value != null) {
+            _value = value;
+        } else {
+            _value = value2;
+            condition = value;
+        }
+
+        if(this.conditions == undefined) this.conditions = [];
+
+        this.conditions.push({
+            type: QueryOperand.OR,
             value: _value,
             condition,
             column

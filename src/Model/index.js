@@ -7,6 +7,7 @@ function ConstructModel(e, model) {
 
   let m = new model();
 
+  m.isNew = false;
   m.constructor.rows = Object.keys(e);
 
   let protected = [];
@@ -60,6 +61,10 @@ class Model {
     return DB.ExecuteQuery(new QueryBuilder(this.table).Select().Where(...arguments)).map(e => ConstructModel(e, this));
   }
 
+  static whereOr() {
+    return DB.ExecuteQuery(new QueryBuilder(this.table).Select().WhereOr(...arguments)).map(e => ConstructModel(e, this));
+  }
+
   belongsTo(model, source = (new Error()).stack.split("\n")[2].split(" ")[6].toLowerCase() + "_id", column = "id") {
     if(this[source] == null) throw new Error("Value can't be null!");
     return model.find(this[source], column);
@@ -80,10 +85,11 @@ class Model {
     DB.ExecuteQuery(new QueryBuilder(this.constructor.table).Delete().Where(field, this[field]));
   }
 
-  save() {
+  save(ignore = false) {
     let _c = GetIDField(this);
-    let doInsert = _c == null || this[_c] == null;
+    let doInsert = this.constructor.isNew;
     let query = new QueryBuilder(this.constructor.table);
+    query.ForceInsert = ignore;
 
     let r = Object.keys(this);
     if(this.constructor.rows != null) r = r.filter(a => this.constructor.rows.filter(b => a == b).length >= 1);
@@ -98,5 +104,6 @@ class Model {
 }
 
 Model.table = null;
+Model.isNew = true;
 
 module.exports = Model;
