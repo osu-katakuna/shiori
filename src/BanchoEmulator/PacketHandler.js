@@ -1,4 +1,4 @@
-const Logger = require('../logging');
+const Logger = require('../Logger');
 const TokenManager = require('../TokenManager');
 
 const PacketHandlerTable = {

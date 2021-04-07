@@ -2,7 +2,7 @@ function Initialize() {
   const RedisSubsystem = require("../Redis");
   const TokenManager = require("../TokenManager");
   const ChannelManager = require("../ChannelManager");
-  const Logger = require("../logging");
+  const Logger = require("../Logger");
 
   RedisSubsystem.SubscribeToChannel("shiori:ban", function(userID) {
     Logger.Info(`REDIS: Received command to ban user id ${userID} on here.`);

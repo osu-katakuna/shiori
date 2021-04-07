@@ -1,7 +1,7 @@
 var TokenManager = require("../../TokenManager");
 var MultiplayerManager = require("../../MultiplayerManager");
 const Parse = require('../Parsers/MPMatchInfo');
-var Logger = require('../../logging');
+var Logger = require('../../Logger');
 
 module.exports = ({token, data}) => {
   if((t = TokenManager.GetToken(token)) != null) {

@@ -1,4 +1,4 @@
-const Logger = require('../logging');
+const Logger = require('../Logger');
 const ChannelManager = require('../ChannelManager');
 const Status = require("../Models/Status").Status;
 const Packets = require('../BanchoEmulator/Packets');

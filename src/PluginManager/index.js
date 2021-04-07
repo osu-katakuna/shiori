@@ -28,7 +28,7 @@ function HookInstance(by) {
     return require.main.require(f);
   };
 
-  const Logger = require('../logging');
+  const Logger = require('../Logger');
   const ConfigManager = by.config ? new(require('../ConfigManager'))(by.name, by.config) : undefined;
   const Plugin = {
     Disable: () => DisablePlugin(by.name)
@@ -43,7 +43,7 @@ function HookInstance(by) {
 }
 
 function DisablePlugin(plugin) {
-  var Logger = require('../logging');
+  var Logger = require('../Logger');
 
   Logger.Failure(`Disabling plugin '${plugin}'...`);
   RegisteredPlugins = RegisteredPlugins.filter(x => x.name != plugin);
@@ -51,7 +51,7 @@ function DisablePlugin(plugin) {
 }
 
 function CallHook(hook, ...args) {
-  var Logger = require('../logging');
+  var Logger = require('../Logger');
 
   var overriden = false;
 
@@ -68,7 +68,7 @@ function CallHook(hook, ...args) {
 }
 
 function LoadPlugins() {
-  var Logger = require('../logging');
+  var Logger = require('../Logger');
 
   var pluginsDirectoryPath = path.resolve(path.dirname(require.main.filename), "./plugins");
 

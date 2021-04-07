@@ -24,7 +24,7 @@ function StartServer(callback = noop) {
   if(Config.server.isUnderProxy) app.set('trust proxy', 'loopback');
 
   app.use(function (req, res, next) {
-    const Logger = require("../logging");
+    const Logger = require("../Logger");
     Logger.Info(`${req.method} ${req.path} - ${req.ip} - ${new Date()} - ${req.get('User-Agent')}`);
     if(req.get("Content-Type") != null && req.get("Content-Type").toLowerCase().indexOf("multipart/form-data") >= 0) next();
     else {

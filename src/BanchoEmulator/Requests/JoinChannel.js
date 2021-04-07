@@ -1,4 +1,4 @@
-const Logger = require('../../logging');
+const Logger = require('../../Logger');
 const User = require('../../Models/User');
 const ExecuteHook = require("../../PluginManager").CallHook;
 const TokenManager = require("../../TokenManager");

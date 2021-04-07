@@ -1,4 +1,4 @@
-const Logger = require('../logging');
+const Logger = require('../Logger');
 const MultiplayerMatch = require('./MultiplayerMatch');
 const TokenManager = require('../TokenManager');
 const ChannelManager = require('../ChannelManager');

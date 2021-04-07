@@ -1,5 +1,5 @@
 const Packets = require('../Packets');
-const Logger = require('../../logging');
+const Logger = require('../../Logger');
 const uuid = require('uuid').v4;
 const User = require('../../Models/User');
 const LoginParser = require('../Parsers/LoginParser');
@@ -9,6 +9,9 @@ const TokenManager = require("../../TokenManager");
 const ChannelManager = require("../../ChannelManager");
 
 module.exports = ({req, res, token}) => {
+  // benchmark
+  let LoginStart = Date.now();
+
   var LoginParameter = LoginParser(req.body);
 
   var user = User.where([
@@ -73,4 +76,6 @@ module.exports = ({req, res, token}) => {
       user.Token.Message(msg.from, msg.from.name, msg.formattedContent);
     });
   }
+
+  Logger.Warning(`Login took ${Date.now() - LoginStart}ms`);
 };

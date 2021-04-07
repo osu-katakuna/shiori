@@ -1,7 +1,7 @@
 const Token = require('./Token');
 
 const Packets = require('../BanchoEmulator/Packets');
-const Logger = require('../logging');
+const Logger = require('../Logger');
 const ChannelManager = require('../ChannelManager');
 const MultiplayerManager = require('../MultiplayerManager');
 const Status = require('../Models/Status').Status;
@@ -114,7 +114,7 @@ class OsuToken extends Token {
   Mute(reason = "no reason provided", time = 0) {
     this.mutedTime += time;
     Logger.Failure(`${this.user.name} was ${this.mutedTime > 0 ? "muted for " + this.mutedTime + "s with reason: " + reason : "unmuted"}.`);
-    this.mutedTime > 0 && this.Message(this.fakeBanchoBot, null, `You have been muted for ${this.mutedTime / 60} minutes for the following reason: ${reason}`);
+    this.mutedTime > 0 && this.Message(this.fakeBanchoBot, null, `You have been muted for ${this.mutedTime < 60 ? 1 : Math.round(this.mutedTime / 60)} minute(s) for the following reason: ${reason}`);
     this.enqueue(Packets.SilenceEndTime(this.mutedTime));
   }
 

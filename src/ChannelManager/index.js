@@ -30,7 +30,7 @@ const defaultConfiguration = {
 
 const ConfigManager = new (require("../ConfigManager"))("channels", defaultConfiguration);
 var RegisteredChannels = [];
-var Logger = require('../logging');
+var Logger = require('../Logger');
 
 const ChannelType = {
   PUBLIC_CHANNEL: 0,

@@ -1,5 +1,5 @@
 const uuid = require('uuid').v4;
-const Logger = require("../logging");
+const Logger = require("../Logger");
 const OsuToken = require("./OsuToken");
 const RedisSubsystem = require("../Redis");
 

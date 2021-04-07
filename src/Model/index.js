@@ -1,53 +1,63 @@
 const DB = require("../Database").GetSubsystem();
-const SQLEscape = require('sqlstring').escape;
+const QueryBuilder = require("./QueryBuilder");
+const Logger = require("../Logger");
+
+function ConstructModel(e, model) {
+  if(e == null) return null;
+
+  let m = new model();
+
+  m.constructor.rows = Object.keys(e);
+
+  let protected = [];
+  if(model.protected != null) protected = model.protected; // do this to prevent lots of calls
+
+  Object.keys(e).forEach(key => {
+    let finalKey = key;
+
+    if((o = Object.getOwnPropertyDescriptor(m, key)) != null && o.get != null) {
+      Logger.Warning(`The main Model ${model.constructor.name} has already a getter called ${key}!`);
+      Logger.Warning(`${key} will be replaced with _${key}!`);
+      finalKey = '_' + key;
+    }
+
+    if(protected.filter(col => col == key).length >= 1)
+      return;
+
+    if(typeof e[key] == 'string' && e[key].indexOf("T") >= 10 && e[key][e[key].length - 1] == 'Z') {
+      Logger.Warning(`${key} is a date!`);
+      e[key] = new Date(e[key]);
+    }
+
+    m[finalKey] = e[key];
+  });
+  
+  return m;
+}
+
+function GetIDField(model) {
+  if(model.id != null) return "id";
+
+  let q = Object.keys(model);
+
+  for(let i = 0; i < q.length; i++)
+    if(q[i].toLowerCase().indexOf("id") >= 0)
+      return q[i];
+
+  return null;
+}
 
 class Model {
-  constructor() {
-    this.oldData = [];
-    this.update = false;
-  }
-
-  static getTableName() {
-    return this.table;
-  }
-
   static all() {
-    return DB.Query("SELECT * FROM " + this.table).map(u => {
-      var i = new this();
-      i.update = true;
-      Object.keys(u).forEach(obj => { if(this.protected == null || this.protected.filter(x => x == obj).length == 0) {
-        i[obj] = u[obj];
-        i.oldData[obj] = u[obj];
-      }});
-      return i;
-    });
+    return DB.ExecuteQuery(new QueryBuilder(this.table).Select()).map(e => ConstructModel(e, this));
   }
 
   static find(id, column = "id") {
-    return DB.Query("SELECT * FROM " + this.table + " WHERE " + column + " = ?", id).map(u => {
-      var i = new this();
-      i.update = true;
-      Object.keys(u).forEach(obj => { if(this.protected == null || this.protected.filter(x => x == obj).length == 0) {
-        i[obj] = u[obj];
-        i.oldData[obj] = u[obj];
-      }});
-      return i;
-    })[0];
+    return ConstructModel(DB.ExecuteQuery(new QueryBuilder(this.table).Select().Where(column, id))[0], this);
   }
 
-  static where(p) {
-    var whereString = " ";
-    for(var i = 0; i < p.length; i++) whereString = whereString.concat((i > 0 ? " AND " : "WHERE ") + p[i][0] + ' ' + (p[i][2] != null ? p[i][1] : '=') + ' ' + SQLEscape(p[i][2] != null ? p[i][2] : p[i][1]));
-
-    return DB.Query("SELECT * FROM " + this.table + whereString).map(u => {
-      var i = new this();
-      i.update = true;
-      Object.keys(u).forEach(obj => { if(this.protected == null || this.protected.filter(x => x == obj).length == 0) {
-        i[obj] = u[obj];
-        i.oldData[obj] = u[obj];
-      }});
-      return i;
-    });
+  static where() {
+    return DB.ExecuteQuery(new QueryBuilder(this.table).Select().Where(...arguments)).map(e => ConstructModel(e, this));
   }
 
   belongsTo(model, source = (new Error()).stack.split("\n")[2].split(" ")[6].toLowerCase() + "_id", column = "id") {
@@ -57,60 +67,33 @@ class Model {
 
   hasMany(model, source = "id", column = (new Error()).stack.split("\n")[2].split(" ")[6].toLowerCase() + "_id") {
     if(this[source] == null) throw new Error("Value can't be null!");
-    return model.where([
-      [column, this[source]
-    ]]);
-  }
-
-  static whereValue(values) {
-    return this.where([
-      ...values.map(x => [x[0], this[x[1]] == null ? x[1] : this[x[1]]])
-    ]);
-  }
-
-  save() {
-    const columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME).filter(x => this[x] != null);
-
-    if(this.update) {
-      let val = "";
-      let old = "";
-
-      for(var i = 0; i < columns.length; i++) {
-        if(this[columns[i]] == null) continue;
-        val += columns[i] + "=" + SQLEscape(this[columns[i]]) + (i < columns.length - 1 ? ", " : "");
-        old += columns[i] + " = " + SQLEscape(this.oldData[columns[i]]) + (i < columns.length - 1 ? " AND " : "");
-        this.oldData[columns[i]] = this[columns[i]];
-      }
-
-      DB.Query(`UPDATE ${this.constructor.table} SET ${val} WHERE ${old}`);
-    } else {
-      let c = "";
-      let v = "";
-
-      for(var i = 0; i < columns.length; i++) {
-        if(this[columns[i]] == null) continue;
-        c += columns[i] + (i < (columns.length - 1) ? ", " : "");
-        v += SQLEscape(this[columns[i]]) + (i < (columns.length - 1) ? ", " : "");
-        this.oldData[columns[i]] = this[columns[i]];
-      }
-
-      DB.Query(`INSERT INTO ${this.constructor.table}(${c}) VALUES(${v})`);
-    }
+    return model.where(column, this[source]);
   }
 
   delete() {
-    const columns = DB.Query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ${SQLEscape(DB.database)} AND TABLE_NAME = ${SQLEscape(this.constructor.table)} AND DATA_TYPE != ${SQLEscape("timestamp")}`).map(x => x.COLUMN_NAME);
+    let field = GetIDField(this);
 
-    let conditions = "";
+    if(this[field] == null) {
+      throw new Error("No ID Field found!");
+    };
 
-    for(var i = 0; i < columns.length; i++) {
-      if(this[columns[i]] == null) continue;
-      conditions += columns[i] + " = " + SQLEscape(this.oldData[columns[i]]) + (i < columns.length - 1 ? " AND " : "");
-    }
+    DB.ExecuteQuery(new QueryBuilder(this.constructor.table).Delete().Where(field, this[field]));
+  }
 
-    this.update = false;
+  save() {
+    let _c = GetIDField(this);
+    let doInsert = _c == null || this[_c] == null;
+    let query = new QueryBuilder(this.constructor.table);
 
-    DB.Query(`DELETE FROM ${this.constructor.table} WHERE ${conditions}`);
+    let r = Object.keys(this);
+    if(this.constructor.rows != null) r = r.filter(a => this.constructor.rows.filter(b => a == b).length >= 1);
+
+    (doInsert ? query.Insert : query.Update).bind(query)([...r.map(x => [x, this[x]])]);
+    if(!doInsert) query.Where("id", this.id);
+
+    DB.ExecuteQuery(query);
+
+    if(doInsert) this.id = DB.ExecuteQuery(new QueryBuilder(null).SelectLastInsertedID()).id;
   }
 }
 

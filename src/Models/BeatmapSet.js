@@ -9,6 +9,10 @@ class BeatmapSet extends Model {
   get beatmaps() {
     return this.hasMany(Beatmap, "id", "setID");
   }
+
+  get formattedName() {
+    return `${this.artist} - ${this.title}(${this.creator})`;
+  }
 }
 
 BeatmapSet.table = "beatmap_sets";

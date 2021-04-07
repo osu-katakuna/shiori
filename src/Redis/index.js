@@ -1,6 +1,6 @@
 const util = require("util");
 
-var Logger = require("../logging");
+var Logger = require("../Logger");
 var Redis = require("redis");
 var ShioriConfig = require("../Shiori/ShioriConfig");
 

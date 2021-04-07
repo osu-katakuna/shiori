@@ -3,7 +3,7 @@ const path = require('path');
 
 class ConfigManager {
   constructor(module, defaultConfig = {}) {
-    this.logger = require("../logging");
+    this.logger = require("../Logger");
     this.module = module;
     this.configFile = path.join(path.dirname(require.main.filename), `./config/${module}.json`);
     this.defaults = defaultConfig;
