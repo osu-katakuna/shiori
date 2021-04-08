@@ -7,7 +7,7 @@ function ConstructModel(e, model) {
 
   let m = new model();
 
-  m.isNew = false;
+  m.constructor.isNew = false;
   m.constructor.rows = Object.keys(e);
 
   let protected = [];
