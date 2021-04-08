@@ -84,7 +84,7 @@ class QueryBuilder {
 
     WhereOr(column, value = null, value2 = null) {
         if(column instanceof Array && value == null && value2 == null) {
-            column.forEach(x => this.Where(...x));
+            column.forEach(x => this.WhereOr(...x));
             return this;
         }
 
